@@ -113,7 +113,7 @@ class OnboardingStateHandler
     /**
      * Handle shop data collect
      *
-     * @return boolean
+     * @return bool
      */
     private function handleShopDataCollect()
     {
@@ -158,9 +158,9 @@ class OnboardingStateHandler
 
                 return $onboard['status'];
             }
-
-            return false;
         }
+
+        return false;
     }
 
     /**
