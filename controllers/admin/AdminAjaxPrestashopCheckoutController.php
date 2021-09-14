@@ -18,7 +18,9 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
 use Monolog\Logger;
-use PrestaShop\Module\PrestashopCheckout\Api\Payment\Onboarding;
+use PrestaShop\Module\PrestashopCheckout\Api\Psl\Onboarding;
+use PrestaShop\Module\PrestashopCheckout\Configuration\PrestashopCheckoutConfiguration;
+use PrestaShop\Module\PrestashopCheckout\Context\PrestaShopContext;
 use PrestaShop\Module\PrestashopCheckout\Logger\LoggerDirectory;
 use PrestaShop\Module\PrestashopCheckout\Logger\LoggerFactory;
 use PrestaShop\Module\PrestashopCheckout\Logger\LoggerFileFinder;
@@ -41,11 +43,10 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
      */
     public $ajax = true;
 
-    // Bug when we switch live/sandbox mode
-    // /**
-    //  * @var bool
-    //  */
-    // protected $json = true;
+    /**
+     * @var bool
+     */
+    protected $json = true;
 
     /**
      * AJAX: Update payment method order
@@ -80,6 +81,8 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
         /** @var PrestaShop\Module\PrestashopCheckout\PayPal\PayPalConfiguration $paypalConfiguration */
         $paypalConfiguration = $this->module->getService('ps_checkout.paypal.configuration');
         $paypalConfiguration->setPaymentMode(Tools::getValue('paymentMode'));
+
+        $this->ajaxDie(json_encode($paypalConfiguration->getPaymentMode()));
     }
 
     /**
@@ -240,10 +243,8 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
         }
 
         // PSL Call
-        $onboardingApi = new Onboarding($this->context->link);
+        $onboardingApi = new Onboarding(new PrestaShopContext());
         $response = $onboardingApi->createShop(array_filter($psxForm));
-
-        // var_dump($response);
 
         // Check PSL response
         if (!$response['status']) {
@@ -291,7 +292,7 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
     public function ajaxProcessPslOnboard()
     {
         // Generate a new link to onboard a new merchant on PayPal
-        $response = (new Onboarding($this->context->link))->onboard();
+        $response = (new Onboarding(new PrestaShopContext()))->onboard();
 
         if (isset($response['httpCode'])) {
             http_response_code((int) $response['httpCode']);

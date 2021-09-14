@@ -66,6 +66,16 @@ class PrestaShopContext
     }
 
     /**
+     * Get the shop url from the context
+     *
+     * @return string
+     */
+    public function getShopUrl()
+    {
+        return $this->context->shop->getBaseURL();
+    }
+
+    /**
      * Get the currency ISO code (ISO 4217) from the context
      *
      * @return string

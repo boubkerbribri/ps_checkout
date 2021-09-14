@@ -21,7 +21,8 @@
 namespace PrestaShop\Module\PrestashopCheckout\Configuration;
 
 use PrestaShop\Module\PrestashopCheckout\Api\Firebase\Token;
-use PrestaShop\Module\PrestashopCheckout\Entity\PsAccount;
+use PrestaShop\Module\PrestashopCheckout\Repository\PaypalAccountRepository;
+use PrestaShop\Module\PrestashopCheckout\Repository\PsAccountRepository;
 
 class PrestashopCheckoutConfiguration
 {
@@ -31,29 +32,68 @@ class PrestashopCheckoutConfiguration
     private $prestashopConfiguration;
 
     /**
-     * @param PrestaShopConfiguration $prestashopConfiguration
+     * @var \PrestaShop\Module\PrestashopCheckout\Repository\PaypalAccountRepository
      */
-    public function __construct(PrestaShopConfiguration $prestashopConfiguration)
-    {
+    private $paypalAccount;
+
+    /**
+     * @var \PrestaShop\Module\PrestashopCheckout\Repository\PsAccountRepository
+     */
+    private $psAccount;
+
+    /**
+     * @param PrestaShopConfiguration $prestashopConfiguration
+     * @param PaypalAccountRepository $paypalAccount
+     * @param PsAccountRepository $psAccount
+     */
+    public function __construct(
+        PrestaShopConfiguration $prestashopConfiguration,
+        PaypalAccountRepository $paypalAccount,
+        PsAccountRepository $psAccount
+    ) {
         $this->prestashopConfiguration = $prestashopConfiguration;
+        $this->paypalAccount = $paypalAccount;
+        $this->psAccount = $psAccount;
     }
 
+    /**
+     * Get Firebase configuration for PrestaShop Checkout
+     *
+     * @return array
+     */
     public function getFirebase()
     {
         $token = new Token();
 
         return [
-            'email' => $this->prestashopConfiguration->get(PsAccount::PS_PSX_FIREBASE_EMAIL),
+            'email' => $this->psAccount->getEmail(),
             'token' => $token->getToken(),
-            'accountId' => $this->prestashopConfiguration->get(PsAccount::PS_PSX_FIREBASE_LOCAL_ID),
-            'refreshToken' => $this->prestashopConfiguration->get(PsAccount::PS_PSX_FIREBASE_REFRESH_TOKEN),
+            'accountId' => $this->psAccount->getLocalId(),
+            'refreshToken' => $this->psAccount->getRefreshToken(),
         ];
     }
 
+    /**
+     * Get shop data for PrestaShop Checkout
+     *
+     * @return array
+     */
     public function getShopData()
     {
         return [
-            'psxForm' => $this->prestashopConfiguration->get(PsAccount::PS_CHECKOUT_PSX_FORM),
+            'psxForm' => $this->psAccount->getPsxForm(),
+        ];
+    }
+
+    /**
+     * Get PayPal configuration for PrestaShop Checkout
+     *
+     * @return array
+     */
+    public function getPaypal()
+    {
+        return [
+            'merchantId' => $this->paypalAccount->getMerchantId(),
         ];
     }
 }

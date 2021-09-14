@@ -20,8 +20,11 @@
 
 namespace PrestaShop\Module\PrestashopCheckout\OnBoarding;
 
-use PrestaShop\Module\PrestashopCheckout\Api\Payment\Onboarding;
+use PrestaShop\Module\PrestashopCheckout\Api\Psl\Onboarding;
 use PrestaShop\Module\PrestashopCheckout\Configuration\PrestashopCheckoutConfiguration;
+use PrestaShop\Module\PrestashopCheckout\Dispatcher\ShopDispatcher;
+use PrestaShop\Module\PrestashopCheckout\PsxData\PsxDataPrepare;
+use PrestaShop\Module\PrestashopCheckout\PsxData\PsxDataValidation;
 use PrestaShop\Module\PrestashopCheckout\Session\Onboarding\OnboardingSessionManager;
 
 class OnboardingStateHandler
@@ -42,23 +45,31 @@ class OnboardingStateHandler
     private $psCheckoutConfiguration;
 
     /**
+     * @var \PrestaShop\Module\PrestashopCheckout\Api\Psl\Onboarding
+     */
+    private $onboardingApi;
+
+    /**
      * @var \PrestaShop\Module\PrestashopCheckout\Session\Session|null
      */
     private $onboardingSession;
 
     /**
-     * @param \PrestaShop\Module\PrestashopCheckout\Session\Onboarding\OnboardingSessionManager $onboardingSessionManager
-     * @param \PrestaShop\Module\PrestashopCheckout\OnBoarding\OnboardingState $onboardingState
-     * @param \PrestaShop\Module\PrestashopCheckout\Configuration\PrestashopCheckoutConfiguration $psCheckoutConfiguration
+     * @param OnboardingSessionManager $onboardingSessionManager
+     * @param OnboardingState $onboardingState
+     * @param PrestashopCheckoutConfiguration $psCheckoutConfiguration
+     * @param Onboarding $onboardingApi
      */
     public function __construct(
         OnboardingSessionManager $onboardingSessionManager,
         OnboardingState $onboardingState,
-        PrestashopCheckoutConfiguration $psCheckoutConfiguration
+        PrestashopCheckoutConfiguration $psCheckoutConfiguration,
+        Onboarding $onboardingApi
     ) {
         $this->onboardingSessionManager = $onboardingSessionManager;
         $this->onboardingState = $onboardingState;
         $this->psCheckoutConfiguration = $psCheckoutConfiguration;
+        $this->onboardingApi = $onboardingApi;
     }
 
     /**
@@ -72,7 +83,10 @@ class OnboardingStateHandler
 
         if (!$this->onboardingSession) {
             $this->handleFirebaseOnboarding();
-            $this->handleShopDataCollect();
+
+            if (true === $this->handleShopDataCollect()) {
+                $this->handlePaypalOnboarding();
+            }
         }
 
         return $this->onboardingSession ? $this->onboardingSession->toArray() : null;
@@ -105,17 +119,69 @@ class OnboardingStateHandler
     {
         if ($this->onboardingState->isShopDataCollected()) {
             $shopDataConfiguration = $this->psCheckoutConfiguration->getShopData();
+            $psxForm = json_decode($shopDataConfiguration['psxForm'], true);
             $data = [
-                'form' => json_decode($shopDataConfiguration['psxForm'], true),
+                'form' => $psxForm,
             ];
             $data = array_merge(json_decode($this->onboardingSession->getData(), true), $data);
 
             $this->onboardingSession->setData(json_encode($data));
             $this->onboardingSession = $this->onboardingSessionManager->apply('collect_shop_data', $this->onboardingSession->toArray(true));
 
+            // PsxForm validation
+            $psxForm = (new PsxDataPrepare($psxForm))->prepareData();
+            $errors = (new PsxDataValidation())->validateData($psxForm);
+
             // TODO : Remove this part after implement SSE + Full CQRS
-            $onboarding = new Onboarding(\Context::getContext()->link);
-            $onboarding->onboard();
+            $createShop = $this->onboardingApi->createShop(array_filter($psxForm));
+
+            if ($createShop['status']) {
+                $onboard = $this->onboardingApi->onboard();
+
+                if (isset($onboard['onboardingLink'])) {
+                    (new ShopDispatcher())->dispatchEventType([
+                        "resource" => [
+                            "shop" => [
+                                "paypal" => [
+                                    "onboard" => [
+                                        "links" => [
+                                            1 => [
+                                                "href" => $onboard['onboardingLink'],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ]);
+                }
+
+                return $onboard['status'];
+            }
+
+            return false;
+        }
+    }
+
+    /**
+     * Handle PayPal onboarding
+     *
+     * @return void
+     */
+    private function handlePaypalOnboarding()
+    {
+        if ($this->onboardingState->isPaypalOnboarded()) {
+            $merchantId = $this->psCheckoutConfiguration->getPaypal()['merchantId'];
+            $onboardingSession = json_decode($this->onboardingSession->getData(), true);
+            $data = [
+                'shop' => [
+                    'merchantId' => $merchantId,
+                ],
+            ];
+            $data = array_merge(json_decode($this->onboardingSession->getData(), true), $data);
+
+            $this->onboardingSession->setData(json_encode($data));
+            $this->onboardingApi->forceUpdateMerchantIntegrations($merchantId);
         }
     }
 }

@@ -18,16 +18,16 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
 
-namespace PrestaShop\Module\PrestashopCheckout\Api\Payment;
+namespace PrestaShop\Module\PrestashopCheckout\Api\Psl;
 
-use PrestaShop\Module\PrestashopCheckout\Api\Payment\Client\PaymentClient;
+use PrestaShop\Module\PrestashopCheckout\Api\Psl\Client\PslClient;
 use PrestaShop\Module\PrestashopCheckout\Builder\Payload\OnboardingPayloadBuilder;
 use PrestaShop\Module\PrestashopCheckout\ShopContext;
 
 /**
  * Handle onbarding request
  */
-class Onboarding extends PaymentClient
+class Onboarding extends PslClient
 {
     /**
      * Create shop on PSL
@@ -38,9 +38,7 @@ class Onboarding extends PaymentClient
      */
     public function createShop(array $data)
     {
-        /** @var \PrestaShop\Module\PrestashopCheckout\Session\Onboarding\OnboardingSessionManager */
-        $onboardingSessionManager = $this->module->getService('ps_checkout.session.onboarding.manager');
-        $openedOnboardingSession = $onboardingSessionManager->getOpened();
+        $openedOnboardingSession = $this->getOpenedSession();
 
         $this->setRoute('/shops');
 
@@ -65,9 +63,7 @@ class Onboarding extends PaymentClient
         $builder = $this->module->getService('ps_checkout.builder.payload.onboarding');
         /** @var ShopContext $shopContext */
         $shopContext = $this->module->getService('ps_checkout.context.shop');
-        /** @var \PrestaShop\Module\PrestashopCheckout\Session\Onboarding\OnboardingSessionManager */
-        $onboardingSessionManager = $this->module->getService('ps_checkout.session.onboarding.manager');
-        $openedOnboardingSession = $onboardingSessionManager->getOpened();
+        $openedOnboardingSession = $this->getOpenedSession();
 
         $builder->buildFullPayload();
 
@@ -109,4 +105,41 @@ class Onboarding extends PaymentClient
 
         return $response;
     }
-}
+
+    /**
+     * Force update merchant integrations from PSL
+     *
+     * @param string $merchantId
+     *
+     * @return array (ResponseApiHandler class)
+     */
+    public function forceUpdateMerchantIntegrations($merchantId)
+    {
+        $openedOnboardingSession = $this->getOpenedSession();
+
+        $this->setRoute('/shops/' . $this->shopUuid . '/force-update-merchant-integrations');
+
+        return $this->post([
+            'headers' => [
+                'X-Correlation-Id' => $openedOnboardingSession->getCorrelationId(),
+                'Session-Token' => $openedOnboardingSession->getAuthToken(),
+            ],
+            'json' => [
+                'merchant_id' => $merchantId,
+            ],
+        ]);
+    }
+
+    /**
+     * Get opened onboarding session
+     *
+     * @return \PrestaShop\Module\PrestashopCheckout\Session\Session
+     */
+    private function getOpenedSession()
+    {
+        /** @var \PrestaShop\Module\PrestashopCheckout\Session\Onboarding\OnboardingSessionManager */
+        $onboardingSessionManager = $this->module->getService('ps_checkout.session.onboarding.manager');
+
+        return $onboardingSessionManager->getOpened();
+    }
+ }

@@ -18,15 +18,15 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
 
-namespace PrestaShop\Module\PrestashopCheckout\Api\Payment;
+namespace PrestaShop\Module\PrestashopCheckout\Api\Psl;
 
-use PrestaShop\Module\PrestashopCheckout\Api\Payment\Client\PaymentClient;
+use PrestaShop\Module\PrestashopCheckout\Api\Psl\Client\PslClient;
 use PrestaShop\Module\PrestashopCheckout\Exception\PsCheckoutSessionException;
 
 /**
  * Handle dispute calls
  */
-class Authentication extends PaymentClient
+class Authentication extends PslClient
 {
     /**
      * Get an auth token from PSL

@@ -52,11 +52,6 @@ onboarding:
         data:
           shop:
             merchant_id:
-            permissions_granted:
-            consent_status:
-            risk_status:
-            account_status:
-            is_email_confirmed:
     update_merchant_integrations:
       from:
         - PAYPAL_ONBOARD_COMPLETED

@@ -20,8 +20,9 @@
 
 namespace PrestaShop\Module\PrestashopCheckout\Session\Onboarding;
 
-use PrestaShop\Module\PrestashopCheckout\Api\Payment\Authentication;
+use PrestaShop\Module\PrestashopCheckout\Api\Psl\Authentication;
 use PrestaShop\Module\PrestashopCheckout\Configuration\PrestaShopConfiguration;
+use PrestaShop\Module\PrestashopCheckout\Context\PrestaShopContext;
 use PrestaShop\Module\PrestashopCheckout\Exception\PsCheckoutSessionException;
 use PrestaShop\Module\PrestashopCheckout\PayPal\Mode;
 use PrestaShop\Module\PrestashopCheckout\PayPal\PayPalConfiguration;
@@ -62,14 +63,17 @@ class OnboardingSessionManager extends SessionManager
     private $mode;
 
     /**
-     * @param \PrestaShop\Module\PrestashopCheckout\Session\Onboarding\OnboardingSessionRepository $repository
-     * @param \PrestaShop\Module\PrestashopCheckout\Session\SessionConfiguration $configuration
-     * @param \PrestaShop\Module\PrestashopCheckout\Configuration\PrestaShopConfiguration $prestashopConfiguration
+     * @param OnboardingSessionRepository $repository
+     * @param SessionConfiguration $configuration
+     * @param PrestaShopConfiguration $prestashopConfiguration
      *
      * @return void
      */
-    public function __construct(OnboardingSessionRepository $repository, SessionConfiguration $configuration, PrestaShopConfiguration $prestashopConfiguration)
-    {
+    public function __construct(
+        OnboardingSessionRepository $repository,
+        SessionConfiguration $configuration,
+        PrestaShopConfiguration $prestashopConfiguration
+    ) {
         parent::__construct($repository);
         $this->context = \Context::getContext();
         $this->configuration = $configuration->getOnboarding();
@@ -83,15 +87,15 @@ class OnboardingSessionManager extends SessionManager
      *
      * @param object $data
      *
-     * @return \PrestaShop\Module\PrestashopCheckout\Session\Session
+     * @return Session
      *
-     * @throws \PrestaShop\Module\PrestashopCheckout\Exception\PsCheckoutSessionException
+     * @throws PsCheckoutSessionException
      */
     public function openOnboarding($data)
     {
         $correlationId = Uuid::uuid4()->toString();
-        $paymentAuthentication = new Authentication($this->context->link);
-        $authToken = $paymentAuthentication->getAuthToken(self::SHOP_SESSION, $correlationId);
+        $authenticationApi = new Authentication(new PrestaShopContext());
+        $authToken = $authenticationApi->getAuthToken(self::SHOP_SESSION, $correlationId);
         $createdAt = date('Y-m-d H:i:s');
         $sessionData = [
             'correlation_id' => $correlationId,
@@ -187,8 +191,8 @@ class OnboardingSessionManager extends SessionManager
         }
 
         if ($updateIntersect !== $sortedUpdateConfiguration) {
-            $exception = new PsCheckoutSessionException($genericErrorMsg . 'Missing expected update session parameters.', PsCheckoutSessionException::MISSING_EXPECTED_PARAMETERS);
-            $module->getLogger()->error($exception->getMessage(), ['update' => $update, 'updateIntersect' => $updateIntersect, 'sortedUpdateConfiguration' => $sortedUpdateConfiguration, 'exception' => $exception, 'trace' => $exception->getTraceAsString()]);
+            $exception = new PsCheckoutSessionException($genericErrorMsg . 'Missing expected update session parameters.' .  PHP_EOL . 'Transition : ' . $next, PsCheckoutSessionException::MISSING_EXPECTED_PARAMETERS);
+            $module->getLogger()->error($exception->getMessage(), ['transition' => $nextTransition, 'update' => $update, 'updateIntersect' => $updateIntersect, 'sortedUpdateConfiguration' => $sortedUpdateConfiguration, 'exception' => $exception, 'trace' => $exception->getTraceAsString()]);
             throw $exception;
         }
     }

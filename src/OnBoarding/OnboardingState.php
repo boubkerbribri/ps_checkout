@@ -22,6 +22,7 @@ namespace PrestaShop\Module\PrestashopCheckout\OnBoarding;
 
 use PrestaShop\Module\PrestashopCheckout\Api\Firebase\Token;
 use PrestaShop\Module\PrestashopCheckout\Configuration\PrestashopCheckoutConfiguration;
+use PrestaShop\Module\PrestashopCheckout\Repository\PaypalAccountRepository;
 
 class OnboardingState
 {
@@ -31,15 +32,22 @@ class OnboardingState
     private $psCheckoutConfiguration;
 
     /**
-     * @param \PrestaShop\Module\PrestashopCheckout\Configuration\PrestashopCheckoutConfiguration $psCheckoutConfiguration
+     * @var \PrestaShop\Module\PrestashopCheckout\Repository\PaypalAccountRepository
      */
-    public function __construct(PrestashopCheckoutConfiguration $psCheckoutConfiguration)
+    private $paypalAccountRepository;
+
+    /**
+     * @param \PrestaShop\Module\PrestashopCheckout\Configuration\PrestashopCheckoutConfiguration $psCheckoutConfiguration
+     * @param \PrestaShop\Module\PrestashopCheckout\Repository\PaypalAccountRepository $paypalAccountRepository
+     */
+    public function __construct(PrestashopCheckoutConfiguration $psCheckoutConfiguration, PaypalAccountRepository $paypalAccountRepository)
     {
         $this->psCheckoutConfiguration = $psCheckoutConfiguration;
+        $this->paypalAccountRepository = $paypalAccountRepository;
     }
 
     /**
-     * Check if the merchant is already onboarded with Firebase
+     * Check if the merchant is already onboarded on Firebase
      *
      * @return bool
      */
@@ -58,5 +66,15 @@ class OnboardingState
     public function isShopDataCollected()
     {
         return !empty($this->psCheckoutConfiguration->getShopData()['psxForm']);
+    }
+
+    /**
+     * Check if the merchant is already onboarded on PayPal
+     *
+     * @return bool
+     */
+    public function isPaypalOnboarded()
+    {
+        return $this->paypalAccountRepository->onBoardingIsCompleted();
     }
 }

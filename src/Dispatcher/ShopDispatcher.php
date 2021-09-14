@@ -75,6 +75,7 @@ class ShopDispatcher implements Dispatcher
             'risk_status' => isset($payloadIntegrations['risk_status']) ? $payloadIntegrations['risk_status'] : null,
             'account_status' => isset($payloadIntegrations['account_status']) ? $payloadIntegrations['account_status'] : null,
             'is_email_confirmed' => isset($payloadIntegrations['is_email_confirmed']) ? $payloadIntegrations['is_email_confirmed'] : null,
+            'merchant_id' => isset($payloadIntegrations['merchant_id']) ? $payloadIntegrations['merchant_id'] : null,
         ];
 
         $openedSession->setData(json_encode($data));

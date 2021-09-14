@@ -41,6 +41,8 @@ services:
     public: true
     arguments:
       - '@ps_checkout.configuration'
+      - '@ps_checkout.repository.paypal.account'
+      - '@ps_checkout.repository.prestashop.account'
 
   ps_checkout.logger.directory:
     class: 'PrestaShop\Module\PrestashopCheckout\Logger\LoggerDirectory'
@@ -133,6 +135,18 @@ services:
     arguments:
       - '@ps_checkout.api.firebase.auth'
       - '@ps_checkout.persistent.configuration'
+
+  ps_checkout.api.psl.authentication:
+    class: 'PrestaShop\Module\PrestashopCheckout\Api\Psl\Authentication'
+    public: true
+    arguments:
+      - '@ps_checkout.context.prestashop'
+
+  ps_checkout.api.psl.onboarding:
+    class: 'PrestaShop\Module\PrestashopCheckout\Api\Psl\Onboarding'
+    public: true
+    arguments:
+      - '@ps_checkout.context.prestashop'
 
   ps_checkout.repository.paypal.account:
     class: 'PrestaShop\Module\PrestashopCheckout\Repository\PaypalAccountRepository'
@@ -425,6 +439,7 @@ services:
     public: true
     arguments:
       - '@ps_checkout.prestashop_checkout.configuration'
+      - '@ps_checkout.repository.paypal.account'
 
   ps_checkout.onboarding.state.handler:
     class: 'PrestaShop\Module\PrestashopCheckout\OnBoarding\OnboardingStateHandler'
@@ -433,3 +448,4 @@ services:
       - '@ps_checkout.session.onboarding.manager'
       - '@ps_checkout.onboarding.state'
       - '@ps_checkout.prestashop_checkout.configuration'
+      - '@ps_checkout.api.psl.onboarding'

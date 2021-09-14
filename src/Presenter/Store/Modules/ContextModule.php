@@ -22,7 +22,7 @@ namespace PrestaShop\Module\PrestashopCheckout\Presenter\Store\Modules;
 
 use PrestaShop\Module\PrestashopCheckout\Adapter\LinkAdapter;
 use PrestaShop\Module\PrestashopCheckout\Context\PrestaShopContext;
-use PrestaShop\Module\PrestashopCheckout\Environment\PsxEnv;
+use PrestaShop\Module\PrestashopCheckout\Environment\PslEnv;
 use PrestaShop\Module\PrestashopCheckout\Faq\Faq;
 use PrestaShop\Module\PrestashopCheckout\OnBoarding\Step\LiveStep;
 use PrestaShop\Module\PrestashopCheckout\OnBoarding\Step\ValueBanner;
@@ -126,7 +126,7 @@ class ContextModule implements PresenterInterface
         $shopId = (int) \Context::getContext()->shop->id;
         $shopUuid = (new ShopUuidManager())->getForShop($shopId);
 
-        $sseUrl = (new PsxEnv())->getPsxApiUrl() . '/webhooks/sse/onboarding/' . $shopUuid;
+        $sseUrl = (new PslEnv())->getPslApiUrl() . '/webhooks/sse/onboarding/' . $shopUuid;
 
         return [
             'context' => [
