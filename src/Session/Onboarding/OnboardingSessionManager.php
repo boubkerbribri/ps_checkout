@@ -191,7 +191,7 @@ class OnboardingSessionManager extends SessionManager
         }
 
         if ($updateIntersect !== $sortedUpdateConfiguration) {
-            $exception = new PsCheckoutSessionException($genericErrorMsg . 'Missing expected update session parameters.' .  PHP_EOL . 'Transition : ' . $next, PsCheckoutSessionException::MISSING_EXPECTED_PARAMETERS);
+            $exception = new PsCheckoutSessionException($genericErrorMsg . 'Missing expected update session parameters.' . PHP_EOL . 'Transition : ' . $next, PsCheckoutSessionException::MISSING_EXPECTED_PARAMETERS);
             $module->getLogger()->error($exception->getMessage(), ['transition' => $nextTransition, 'update' => $update, 'updateIntersect' => $updateIntersect, 'sortedUpdateConfiguration' => $sortedUpdateConfiguration, 'exception' => $exception, 'trace' => $exception->getTraceAsString()]);
             throw $exception;
         }

@@ -19,7 +19,6 @@
  */
 use Monolog\Logger;
 use PrestaShop\Module\PrestashopCheckout\Api\Psl\Onboarding;
-use PrestaShop\Module\PrestashopCheckout\Configuration\PrestashopCheckoutConfiguration;
 use PrestaShop\Module\PrestashopCheckout\Context\PrestaShopContext;
 use PrestaShop\Module\PrestashopCheckout\Logger\LoggerDirectory;
 use PrestaShop\Module\PrestashopCheckout\Logger\LoggerFactory;

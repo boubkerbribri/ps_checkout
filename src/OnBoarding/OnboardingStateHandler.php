@@ -140,13 +140,13 @@ class OnboardingStateHandler
 
                 if (isset($onboard['onboardingLink'])) {
                     (new ShopDispatcher())->dispatchEventType([
-                        "resource" => [
-                            "shop" => [
-                                "paypal" => [
-                                    "onboard" => [
-                                        "links" => [
+                        'resource' => [
+                            'shop' => [
+                                'paypal' => [
+                                    'onboard' => [
+                                        'links' => [
                                             1 => [
-                                                "href" => $onboard['onboardingLink'],
+                                                'href' => $onboard['onboardingLink'],
                                             ],
                                         ],
                                     ],

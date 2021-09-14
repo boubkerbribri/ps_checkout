@@ -142,4 +142,4 @@ class Onboarding extends PslClient
 
         return $onboardingSessionManager->getOpened();
     }
- }
+}
