@@ -47,10 +47,6 @@ class PslClient extends GenericClient
      */
     protected $context;
 
-    /**
-     * @param \PrestaShop\Module\PrestashopCheckout\Context\PrestaShopContext $context
-     * @param \Client|null $client
-     */
     public function __construct(PrestaShopContext $context, Client $client = null)
     {
         $this->context = $context;

@@ -113,7 +113,7 @@ class OnboardingStateHandler
     /**
      * Handle shop data collect
      *
-     * @return void
+     * @return boolean
      */
     private function handleShopDataCollect()
     {
