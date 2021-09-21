@@ -19,7 +19,9 @@
  */
 
 use Monolog\Logger;
-use PrestaShop\Module\PrestashopCheckout\Api\Payment\Webhook;
+use PrestaShop\Module\PrestashopCheckout\Api\Payment\Webhook as PaymentWebhook;
+use PrestaShop\Module\PrestashopCheckout\Api\Psl\Webhook as PslWebhook;
+use PrestaShop\Module\PrestashopCheckout\Context\PrestaShopContext;
 use PrestaShop\Module\PrestashopCheckout\Controller\AbstractFrontController;
 use PrestaShop\Module\PrestashopCheckout\Dispatcher\MerchantDispatcher;
 use PrestaShop\Module\PrestashopCheckout\Dispatcher\OrderDispatcher;
@@ -33,6 +35,10 @@ use PrestaShop\Module\PrestashopCheckout\WebHookValidation;
 class ps_checkoutDispatchWebHookModuleFrontController extends AbstractFrontController
 {
     const PS_CHECKOUT_PAYPAL_ID_LABEL = 'PS_CHECKOUT_PAYPAL_ID_MERCHANT';
+
+    const CATEGORY = [
+        'SHOP' => 'SHOP',
+    ];
 
     /**
      * @var Ps_checkout
@@ -123,7 +129,14 @@ class ps_checkoutDispatchWebHookModuleFrontController extends AbstractFrontContr
     private function checkPSLSignature(array $bodyValues)
     {
         $context = Context::getContext();
-        $response = (new Webhook($context->link))->getShopSignature($bodyValues);
+
+        if ($bodyValues['category'] === self::CATEGORY['SHOP']) {
+            $webhook = new PslWebhook(new PrestaShopContext());
+        } else {
+            $webhook = new PaymentWebhook($context->link);
+        }
+
+        $response = $webhook->getShopSignature($bodyValues);
 
         return isset($response['status']) && $response['status'];
     }
@@ -179,7 +192,7 @@ class ps_checkoutDispatchWebHookModuleFrontController extends AbstractFrontContr
      */
     private function setAtributesBodyValues(array $bodyValues)
     {
-        $resource = $bodyValues['category'] === Webhook::CATEGORY['SHOP']
+        $resource = $bodyValues['category'] === self::CATEGORY['SHOP']
             ? $bodyValues['resource']
             : json_decode($bodyValues['resource'], true);
         $this->payload = [
@@ -208,7 +221,7 @@ class ps_checkoutDispatchWebHookModuleFrontController extends AbstractFrontContr
             ]
         );
 
-        if (Webhook::CATEGORY['SHOP'] === $this->payload['category']) {
+        if (self::CATEGORY['SHOP'] === $this->payload['category']) {
             return (new ShopDispatcher())->dispatchEventType($this->payload);
         }
 
