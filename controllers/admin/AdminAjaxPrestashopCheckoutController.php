@@ -18,6 +18,7 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
 use Monolog\Logger;
+use PrestaShop\Module\PrestashopCheckout\Dispatcher\ShopDispatcher;
 use PrestaShop\Module\PrestashopCheckout\Api\Psl\Onboarding;
 use PrestaShop\Module\PrestashopCheckout\Context\PrestaShopContext;
 use PrestaShop\Module\PrestashopCheckout\Logger\LoggerDirectory;
@@ -292,6 +293,24 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
     {
         // Generate a new link to onboard a new merchant on PayPal
         $response = (new Onboarding(new PrestaShopContext()))->onboard();
+
+        if (isset($response['onboardingLink'])) {
+            (new ShopDispatcher())->dispatchEventType([
+                'resource' => [
+                    'shop' => [
+                        'paypal' => [
+                            'onboard' => [
+                                'links' => [
+                                    1 => [
+                                        'href' => $response['onboardingLink']
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]);
+        }
 
         if (isset($response['httpCode'])) {
             http_response_code((int) $response['httpCode']);

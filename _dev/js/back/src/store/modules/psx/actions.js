@@ -31,7 +31,7 @@ export default {
       if (response.status === false) {
         throw response;
       }
-      
+
       commit(types.UPDATE_FORM_DATA, payload.form);
       commit(types.UPDATE_ONBOARDING_STATUS, response.status);
 

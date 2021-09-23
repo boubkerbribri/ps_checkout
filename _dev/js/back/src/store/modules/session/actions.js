@@ -39,6 +39,23 @@ export default {
       return Promise.resolve(response);
     });
   },
+  updatePaypalOnboardingUrl({ commit, dispatch, state }, payload) {
+    const { onboardingLink } = payload;
+    if (onboardingLink) {
+      commit(types.ONBOARDING_SESSION, {
+        ...state.onboarding,
+        data: {
+          ...((state.onboarding || {}).data || {}),
+          shop: {
+            ...(((state.onboarding || {}).data || {}).shop || {}),
+            paypal_onboarding_url: onboardingLink
+          }
+        }
+      });
+    }
+
+    return dispatch('pollingPaypalOnboardingUrl');
+  },
   pollingPaypalOnboardingUrl({ getters, dispatch }) {
     const canBeActivated = () =>
       getters.firebaseOnboardingIsCompleted && !getters.hasOnboardingUrl;

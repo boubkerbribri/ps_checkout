@@ -503,14 +503,19 @@
                 .push('/authentication')
                 // eslint-disable-next-line no-console
                 .catch(exception => console.log(exception));
-              this.$store.dispatch({
-                type: 'transitOnboardingSession',
-                sessionAction: 'collect_shop_data',
-                session: session
-              });
-              this.$store.dispatch({ type: 'onboard' }).then(() => {
-                this.$store.dispatch('pollingPaypalOnboardingUrl');
-              });
+              this.$store
+                .dispatch('transitOnboardingSession', {
+                  sessionAction: 'collect_shop_data',
+                  session: session
+                })
+                .then(() =>
+                  this.$store
+                    .dispatch('onboard')
+                    .then(response =>
+                      this.$store.dispatch(
+                        'updatePaypalOnboardingUrl',
+                        response))
+                );
             }
             this.errorForm = response;
             this.errorException = '';

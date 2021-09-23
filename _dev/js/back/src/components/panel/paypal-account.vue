@@ -202,6 +202,10 @@
       paypalAccountStatus() {
         return this.$store.state.paypal.onboardingCompleted;
       },
+      paypalOnboardLink() {
+        return this.$store.state.session?.onboarding?.data?.shop
+          ?.paypal_onboarding_url;
+      },
       cardPaymentIsActive() {
         return this.$store.state.paypal.cardIsActive;
       },
@@ -219,23 +223,27 @@
           category: 'ps_checkout'
         });
         this.$store.dispatch('unlink').then(() => {
-          this.$store
+          return this.$store
             .dispatch({
               type: 'closeOnboardingSession',
               session: this.$store.state.session.onboarding
             })
             .then(() => {
               this.pollingPaypalOnboardingUrl();
-
-              this.$store
-                .dispatch({
-                  type: 'createShop',
-                  form: null
-                })
-                .then(() => {
-                  this.$store.dispatch('onboard');
-                });
               this.sendTrack();
+
+              return this.$store
+                .dispatch('createShop', { form: null })
+                .then(() =>
+                  this.$store
+                    .dispatch('onboard')
+                    .then(response =>
+                      this.$store.dispatch(
+                        'updatePaypalOnboardingUrl',
+                        response
+                      )
+                    )
+                );
             });
         });
       },
@@ -246,7 +254,9 @@
       }
     },
     mounted() {
-      this.pollingPaypalOnboardingUrl();
+      if (this.paypalOnboardLink) {
+        this.pollingPaypalOnboardingUrl();
+      }
     }
   };
 </script>
