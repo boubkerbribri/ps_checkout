@@ -76,7 +76,7 @@
             class="text-center float-right"
             v-else-if="!loggedInWithPsAccountsAccount"
           >
-            <a :href="configurePsAccountsURL" v-if="!isReady">
+            <a :href="configurePsAccountsURL" v-if="!isPsAccountsEnabled">
               <b-button variant="outline-secondary">
                 {{ $t('panel.accounts.checkout.configurePsAccounts') }}
               </b-button>
@@ -84,6 +84,27 @@
             <span v-else>
               {{ $t('panel.accounts.checkout.enablePsAccounts') }}
             </span>
+          </div>
+
+          <div
+            class="text-center float-right"
+            v-else-if="loggedInWithPsAccountsAccount"
+          >
+            <a :href="configurePsAccountsURL" v-if="isPsAccountsEnabled">
+              <b-button variant="outline-primary">
+                {{ $t('panel.accounts.checkout.manageAccount') }}
+              </b-button>
+            </a>
+            <a
+              href="#"
+              class="ml-1"
+              @click.prevent="goToAdditionalInformation()"
+              v-if="isPsAccountsEnabled"
+            >
+              <b-button variant="outline-primary">
+                {{ $t('panel.accounts.checkout.manageInfo') }}
+              </b-button>
+            </a>
           </div>
 
           <!-- modal -->
@@ -181,6 +202,12 @@
       goToSignIn() {
         this.$router
           .push('/authentication/signin')
+          // eslint-disable-next-line no-console
+          .catch(exception => console.log(exception));
+      },
+      goToAdditionalInformation() {
+        this.$router
+          .push('/authentication/additional')
           // eslint-disable-next-line no-console
           .catch(exception => console.log(exception));
       },
