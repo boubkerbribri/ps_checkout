@@ -33,6 +33,13 @@ class AdminPaypalOnboardingPrestashopCheckoutController extends ModuleAdminContr
      */
     public function postProcess()
     {
+        $env = new \PrestaShop\Module\PrestashopCheckout\Environment\PaymentEnv();
+        $qaMode = "1" === $env->getEnv('PS_CHECKOUT_QA_MODE');
+
+        if ($qaMode) {
+            $this->setMockPostValues();
+        }
+
         try {
             $idMerchant = Tools::getValue('merchantIdInPayPal');
 
@@ -77,6 +84,10 @@ class AdminPaypalOnboardingPrestashopCheckoutController extends ModuleAdminContr
             if ($paypalAccount->getCardPaymentStatus() === PaypalAccountUpdater::SUBSCRIBED) {
                 // track account paypal fully approved
                 $this->module->getService('ps_checkout.segment.tracker')->track('Account Paypal Fully Approved', Shop::getContextListShopID());
+            }
+
+            if ($qaMode) {
+                $this->sendMockOnboardWebhook();
             }
 
             Tools::redirect(
@@ -170,5 +181,24 @@ class AdminPaypalOnboardingPrestashopCheckoutController extends ModuleAdminContr
         }
 
         parent::display();
+    }
+
+    private function setMockPostValues()
+    {
+        $_GET["merchantIdInPayPal"] = $_ENV['QA_MERCHANT_ID_PAYPAL'];
+        $_GET["merchantId"] = $_ENV['QA_MERCHANT_ID'];
+        $_GET["permissionsGranted"] = $_ENV['QA_PERMISSIONS_GRANTED'];
+        $_GET["accountStatus"] = $_ENV['QA_ACCOUNT_STATUS'];
+        $_GET["consentStatus"] = $_ENV['QA_CONSENT_STATUS'];
+        $_GET["productIntentId"] = $_ENV['QA_PRODUCT_INTENT_ID'];
+        $_GET["isEmailConfirmed"] = $_ENV['QA_EMAIL_CONFIRMED'];
+        $_GET["returnMessage"] = $_ENV['QA_RETURN_MESSAGE'];
+        $_GET["riskStatus"] = $_ENV['QA_RISK_STATUS'];
+        $_GET["productIntentID"] = $_ENV['QA_PRODUCT_INTENT_ID'];
+    }
+
+    private function sendMockOnboardWebhook()
+    {
+
     }
 }

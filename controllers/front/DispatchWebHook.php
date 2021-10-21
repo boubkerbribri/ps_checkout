@@ -96,6 +96,7 @@ class ps_checkoutDispatchWebHookModuleFrontController extends AbstractFrontContr
                 throw new PsCheckoutException('Body can\'t be empty', PsCheckoutException::PSCHECKOUT_WEBHOOK_BODY_EMPTY);
             }
 
+            file_put_contents('/var/www/html/PS1.7.7.1-COPY/modules/ps_checkout/'. date('Ymd-His') . '.txt', $bodyContent);
             $bodyValues = json_decode($bodyContent, true);
 
             if (empty($bodyValues)) {
