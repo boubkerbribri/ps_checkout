@@ -35,5 +35,8 @@
         "test": "npm run back:test && npm run front:test"
     },
     "license": "AFL-3.0",
-    "private": true
+    "private": true,
+    "dependencies": {
+        "prestashop_accounts_vue_components": "^2.0.4"
+    }
 }

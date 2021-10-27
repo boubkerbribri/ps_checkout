@@ -59,6 +59,8 @@
     </b-container>
 
     <b-container>
+      <PsAccounts class="mb-3" />
+
       <CheckoutAccount class="mb-3" :sendTrack="sendTrack" />
 
       <div v-if="!isModuleEnabled">
@@ -103,6 +105,7 @@
   import PaypalStatusBanner from '@/components/banner/paypal-status';
   import PaypalIncompatibleCountry from '@/components/banner/paypal-incompatible-country';
   import PaypalIncompatibleCurrency from '@/components/banner/paypal-incompatible-currency';
+  import { PsAccounts } from 'prestashop_accounts_vue_components';
 
   export default {
     name: 'Accounts',
@@ -113,7 +116,8 @@
       Reassurance,
       PaypalStatusBanner,
       PaypalIncompatibleCountry,
-      PaypalIncompatibleCurrency
+      PaypalIncompatibleCurrency,
+      PsAccounts
     },
     computed: {
       isModuleEnabled() {

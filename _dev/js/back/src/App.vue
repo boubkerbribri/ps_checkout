@@ -55,6 +55,8 @@
       <RoundingBanner />
     </div>
 
+
+
     <div class="container" v-if="isTestMode">
       <b-alert variant="warning" show>
         <p>{{ $t('general.testModeOn') }}</p>

@@ -35,6 +35,11 @@ import store from './store';
 Vue.use(BootstrapVue);
 Vue.use(VueCollapse);
 
+import psAccountsVueComponents from 'prestashop_accounts_vue_components';
+Vue.use(psAccountsVueComponents);
+Vue.use(i18n);
+psAccountsVueComponents.locale(i18n.locale);
+
 Vue.config.productionTip = process.env.NODE_ENV === 'production';
 
 window.onload = () => {
