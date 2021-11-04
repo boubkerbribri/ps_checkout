@@ -87,7 +87,7 @@ class AdminPaypalOnboardingPrestashopCheckoutController extends ModuleAdminContr
             }
 
             if ($qaMode) {
-                $this->sendMockOnboardWebhook();
+                $this->updatePayPalAccountWithMockCredentials();
             }
 
             Tools::redirect(
@@ -197,8 +197,20 @@ class AdminPaypalOnboardingPrestashopCheckoutController extends ModuleAdminContr
         $_GET["productIntentID"] = $_ENV['QA_PRODUCT_INTENT_ID'];
     }
 
-    private function sendMockOnboardWebhook()
+    private function updatePayPalAccountWithMockCredentials()
     {
+        $paypalAccount = new PaypalAccount(
+            $_ENV['QA_MERCHANT_ID'],
+            $_ENV['QA_PAYPAL_EMAIL'],
+            $_ENV['QA_PAYPAL_EMAIL_VERIFIED'],
+            $_ENV['QA_PAYPAL_PAYMENT_STATUS'],
+            $_ENV['QA_PAYPAL_CARD_PAYMENT_STATUS'],
+            $_ENV['QA_PAYPAL_MERCHANT_COUNTRY']
+        );
 
+        /** @var \PrestaShop\Module\PrestashopCheckout\PersistentConfiguration $persistentConfiguration */
+        $persistentConfiguration = $this->module->getService('ps_checkout.persistent.configuration');
+
+        $persistentConfiguration->savePaypalAccount($paypalAccount);
     }
 }

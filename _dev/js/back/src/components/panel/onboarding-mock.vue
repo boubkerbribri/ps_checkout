@@ -17,25 +17,30 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *-->
 <template>
-  <div>
-    <b-container>
-      <PaymentMode />
-    </b-container>
-    <b-container>
-      <OnboardingMock />
-    </b-container>
-  </div>
+  <b-card no-body class="mt-2">
+    <template v-slot:header>
+      <i class="material-icons">construction</i>
+      {{ $t('panel.payment-mode.title') }}
+    </template>
+    <b-card-body>
+      <b-button
+        id="qa-onboard"
+        :href="getPayPalOnboardingMockLink"
+        variant="link"
+        class="px-0"
+      >
+        Mock PayPal onboarding
+      </b-button>
+    </b-card-body>
+  </b-card>
 </template>
 
 <script>
-  import PaymentMode from '@/components/panel/payment-mode';
-  import OnboardingMock from '@/components/panel/onboarding-mock';
-
   export default {
-    name: 'Experimental',
-    components: {
-      PaymentMode,
-      OnboardingMock
+    computed: {
+      getPayPalOnboardingMockLink() {
+        return this.$store.state.paypal.mockOnboardURL;
+      }
     }
   };
 </script>

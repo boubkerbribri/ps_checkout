@@ -20,6 +20,7 @@
 
 namespace PrestaShop\Module\PrestashopCheckout\Presenter\Store\Modules;
 
+use PrestaShop\Module\PrestashopCheckout\Adapter\LinkAdapter;
 use PrestaShop\Module\PrestashopCheckout\Presenter\PresenterInterface;
 use PrestaShop\Module\PrestashopCheckout\Repository\PaypalAccountRepository;
 
@@ -60,6 +61,7 @@ class PaypalModule implements PresenterInterface
                 'cardIsActive' => $paypalAccount->getCardPaymentStatus(),
                 'paypalIsActive' => $paypalAccount->getPaypalPaymentStatus(),
                 'countryMerchant' => $paypalAccount->getMerchantCountry(),
+                'mockOnboardURL' => (new LinkAdapter())->getAdminLink('AdminPaypalOnboardingPrestashopCheckout'),
             ],
         ];
     }
