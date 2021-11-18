@@ -56,6 +56,16 @@ class AdminPaypalOnboardingPrestashopCheckoutController extends ModuleAdminContr
             }
 
             $paypalAccount = new PaypalAccount($idMerchant);
+            if ($qaMode) {
+                $paypalAccount = new PaypalAccount(
+                    $_ENV['QA_MERCHANT_ID'],
+                    $_ENV['QA_PAYPAL_EMAIL'],
+                    $_ENV['QA_PAYPAL_EMAIL_VERIFIED'],
+                    $_ENV['QA_PAYPAL_PAYMENT_STATUS'],
+                    $_ENV['QA_PAYPAL_CARD_PAYMENT_STATUS'],
+                    $_ENV['QA_PAYPAL_MERCHANT_COUNTRY']
+                );
+            }
 
             /** @var \PrestaShop\Module\PrestashopCheckout\PersistentConfiguration $persistentConfiguration */
             $persistentConfiguration = $this->module->getService('ps_checkout.persistent.configuration');
@@ -84,10 +94,6 @@ class AdminPaypalOnboardingPrestashopCheckoutController extends ModuleAdminContr
             if ($paypalAccount->getCardPaymentStatus() === PaypalAccountUpdater::SUBSCRIBED) {
                 // track account paypal fully approved
                 $this->module->getService('ps_checkout.segment.tracker')->track('Account Paypal Fully Approved', Shop::getContextListShopID());
-            }
-
-            if ($qaMode) {
-                $this->updatePayPalAccountWithMockCredentials();
             }
 
             Tools::redirect(
@@ -195,22 +201,5 @@ class AdminPaypalOnboardingPrestashopCheckoutController extends ModuleAdminContr
         $_GET["returnMessage"] = $_ENV['QA_RETURN_MESSAGE'];
         $_GET["riskStatus"] = $_ENV['QA_RISK_STATUS'];
         $_GET["productIntentID"] = $_ENV['QA_PRODUCT_INTENT_ID'];
-    }
-
-    private function updatePayPalAccountWithMockCredentials()
-    {
-        $paypalAccount = new PaypalAccount(
-            $_ENV['QA_MERCHANT_ID'],
-            $_ENV['QA_PAYPAL_EMAIL'],
-            $_ENV['QA_PAYPAL_EMAIL_VERIFIED'],
-            $_ENV['QA_PAYPAL_PAYMENT_STATUS'],
-            $_ENV['QA_PAYPAL_CARD_PAYMENT_STATUS'],
-            $_ENV['QA_PAYPAL_MERCHANT_COUNTRY']
-        );
-
-        /** @var \PrestaShop\Module\PrestashopCheckout\PersistentConfiguration $persistentConfiguration */
-        $persistentConfiguration = $this->module->getService('ps_checkout.persistent.configuration');
-
-        $persistentConfiguration->savePaypalAccount($paypalAccount);
     }
 }
