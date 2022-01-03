@@ -337,6 +337,12 @@ services:
       - '@ps_checkout.express_checkout.configuration'
       - '@ps_checkout.pay_in_4x.configuration'
 
+  ps_checkout.validator.hosted_fields:
+    class: 'PrestaShop\Module\PrestashopCheckout\Validator\HostedFieldsValidator'
+    public: true
+    arguments:
+      - '@ps_checkout.paypal.configuration'
+
   ps_checkout.cache.directory:
     class: 'PrestaShop\ModuleLibCacheDirectoryProvider\Cache\CacheDirectoryProvider'
     public: true

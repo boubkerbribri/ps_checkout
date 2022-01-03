@@ -713,9 +713,16 @@ class Ps_checkout extends PaymentModule
 
         /** @var \PrestaShop\Module\PrestashopCheckout\FundingSource\FundingSourceProvider $fundingSourceProvider */
         $fundingSourceProvider = $this->getService('ps_checkout.funding_source.provider');
+
+        /** @var \PrestaShop\Module\PrestashopCheckout\Validator\HostedFieldsValidator $hostedFieldsValidator */
+        $hostedFieldsValidator = $this->getService('ps_checkout.validator.hosted_fields');
+
         $paymentOptions = [];
 
         foreach ($fundingSourceProvider->getAll() as $fundingSource) {
+            if (!$hostedFieldsValidator->validateHostedFieldsAvailableForCart($this->context->cart)) {
+                continue;
+            }
             $paymentOptions[$fundingSource->name] = $fundingSource->label;
         }
 
@@ -777,6 +784,9 @@ class Ps_checkout extends PaymentModule
         /** @var \PrestaShop\Module\PrestashopCheckout\FundingSource\FundingSourceProvider $fundingSourceProvider */
         $fundingSourceProvider = $this->getService('ps_checkout.funding_source.provider');
 
+        /** @var \PrestaShop\Module\PrestashopCheckout\Validator\HostedFieldsValidator $hostedFieldsValidator */
+        $hostedFieldsValidator = $this->getService('ps_checkout.validator.hosted_fields');
+
         $paymentOptions = [];
 
         foreach ($fundingSourceProvider->getAll() as $fundingSource) {
@@ -786,6 +796,9 @@ class Ps_checkout extends PaymentModule
             $paymentOption->setBinary(true);
 
             if ('card' === $fundingSource->name && $paypalAccountRepository->cardHostedFieldsIsAvailable()) {
+                if (!$hostedFieldsValidator->validateHostedFieldsAvailableForCart($cart)) {
+                    continue;
+                }
                 $this->context->smarty->assign('modulePath', $this->getPathUri());
                 $paymentOption->setForm($this->context->smarty->fetch('module:ps_checkout/views/templates/hook/paymentOptions.tpl'));
             }
