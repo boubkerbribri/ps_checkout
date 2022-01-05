@@ -25,6 +25,7 @@ use PrestaShop\Module\PrestashopCheckout\Builder\Payload\OrderPayloadBuilder;
 use PrestaShop\Module\PrestashopCheckout\Exception\PsCheckoutException;
 use PrestaShop\Module\PrestashopCheckout\Presenter\Cart\CartPresenter;
 use PrestaShop\Module\PrestashopCheckout\ShopContext;
+use PrestaShop\Module\PrestashopCheckout\Validator\OrderPayloadValidator;
 
 class CreatePaypalOrderHandler
 {
@@ -96,7 +97,12 @@ class CreatePaypalOrderHandler
             $builder->buildMinimalPayload();
         }
 
-        $payload = $builder->presentPayload()->getJson();
+        $payload = $builder->presentPayload();
+
+        $orderPayloadValidator = new OrderPayloadValidator();
+        $orderPayloadValidator->validate($payload);
+
+        $payload = $payload->getJson();
 
         // Create the paypal order or update it
         if (true === $updateOrder) {
