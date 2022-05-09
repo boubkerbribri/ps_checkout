@@ -64,11 +64,16 @@ class FrontControllerValidator
             case 'order':
                 return true;
             case 'product':
-                return $this->expressCheckoutConfiguration->isProductPageEnabled() || $this->payIn4XConfiguration->isProductPageActive();
+                return $this->expressCheckoutConfiguration->isProductPageEnabled()
+                    || $this->payIn4XConfiguration->isProductPageActive()
+                    || $this->payIn4XConfiguration->isProductPageButtonActive();
             case 'cart':
-                return $this->expressCheckoutConfiguration->isOrderPageEnabled() || $this->payIn4XConfiguration->isOrderPageActive();
+                return $this->expressCheckoutConfiguration->isOrderPageEnabled()
+                    || $this->payIn4XConfiguration->isOrderPageActive()
+                    || $this->payIn4XConfiguration->isCartPageButtonActive();
             case 'authentication':
-                return $this->expressCheckoutConfiguration->isCheckoutPageEnabled();
+                return $this->expressCheckoutConfiguration->isCheckoutPageEnabled()
+                    || $this->payIn4XConfiguration->isOrderPageButtonActive();
         }
 
         return false;
@@ -95,7 +100,8 @@ class FrontControllerValidator
                 return true;
             // ExpressCheckout button
             case 'authentication':
-                return $this->expressCheckoutConfiguration->isCheckoutPageEnabled();
+                return $this->expressCheckoutConfiguration->isCheckoutPageEnabled()
+                    || $this->payIn4XConfiguration->isOrderPageButtonActive();
         }
 
         return false;

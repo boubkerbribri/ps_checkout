@@ -47,7 +47,6 @@ export class PayLaterExpressButtonProductComponent extends BaseComponent {
       this.app,
       {
         fundingSource: 'paylater',
-        // TODO: Move this to constant when ExpressCheckoutButton component is created
         querySelector: '#ps-checkout-express-button',
         createOrder: () => {
           const {
