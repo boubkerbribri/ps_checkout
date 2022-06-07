@@ -17,6 +17,9 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
+
+use PrestaShop\Module\PrestashopCheckout\Repository\PaypalAccountRepository;
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 if (!defined('_PS_VERSION_')) {
@@ -356,13 +359,18 @@ class Ps_checkout extends PaymentModule
         $this->disableSegment = true;
         $this->trackModuleAction('Uninstall');
 
+        $onboardingApi = new \PrestaShop\Module\PrestashopCheckout\Api\Psx\Onboarding();
+        /** @var PaypalAccountRepository $accountRepository */
+        $accountRepository = $this->getService('ps_checkout.repository.paypal.account');
+
         foreach (array_keys($this->configurationList) as $name) {
             Configuration::deleteByName($name);
         }
 
         return parent::uninstall() &&
             (new PrestaShop\Module\PrestashopCheckout\Database\TableManager())->dropTable() &&
-            $this->uninstallTabs();
+            $this->uninstallTabs() &&
+            $onboardingApi->deleteOnboarding($accountRepository->getMerchantId());
     }
 
     /**

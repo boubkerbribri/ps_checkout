@@ -39,4 +39,33 @@ class Onboarding extends PsxClient
             'json' => json_encode($data),
         ]);
     }
+
+    /**
+     * Remove existing onboarding
+     *
+     * @param string $merchantId
+     *
+     * @return array
+     */
+    public function deleteOnboarding($correlationId)
+    {
+        $this->setRoute("/shop/onboarding");
+
+        $graphQLBody = [
+            'query' => '
+                mutation ($correlation_id: String!) {
+                  delete(
+                      correlation_id: $correlation_id,
+                  )
+                }
+            ',
+            'variables' => [
+                'correlation_id' => $correlationId,
+            ]
+        ];
+
+        return $this->post([
+            'json' => $graphQLBody,
+        ]);
+    }
 }

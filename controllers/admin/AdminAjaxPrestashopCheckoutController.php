@@ -26,6 +26,7 @@ use PrestaShop\Module\PrestashopCheckout\Logger\LoggerFileReader;
 use PrestaShop\Module\PrestashopCheckout\Presenter\Order\OrderPresenter;
 use PrestaShop\Module\PrestashopCheckout\PsxData\PsxDataPrepare;
 use PrestaShop\Module\PrestashopCheckout\PsxData\PsxDataValidation;
+use PrestaShop\Module\PrestashopCheckout\Repository\PaypalAccountRepository;
 use PrestaShop\Module\PrestashopCheckout\Settings\RoundingSettings;
 use Psr\SimpleCache\CacheInterface;
 
@@ -144,9 +145,17 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
      */
     public function ajaxProcessLogOutPsAccount()
     {
+        /** @var PaypalAccountRepository $accountRepository */
+        $accountRepository = $this->module->getService('ps_checkout.repository.paypal.account');
+
+        $merchantId = $accountRepository->getMerchantId();
+
         /** @var \PrestaShop\Module\PrestashopCheckout\PersistentConfiguration $persistentConfiguration */
         $persistentConfiguration = $this->module->getService('ps_checkout.persistent.configuration');
         $persistentConfiguration->resetPsAccount();
+
+        $onboardingApi = new \PrestaShop\Module\PrestashopCheckout\Api\Psx\Onboarding();
+        $onboardingApi->deleteOnboarding($merchantId);
 
         $this->ajaxDie(json_encode(true));
     }
@@ -156,9 +165,16 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
      */
     public function ajaxProcessLogOutPaypalAccount()
     {
+        /** @var PaypalAccountRepository $accountRepository */
+        $accountRepository = $this->module->getService('ps_checkout.repository.paypal.account');
+        $merchantId = $accountRepository->getMerchantId();
+
         /** @var \PrestaShop\Module\PrestashopCheckout\PersistentConfiguration $persistentConfiguration */
         $persistentConfiguration = $this->module->getService('ps_checkout.persistent.configuration');
         $persistentConfiguration->resetPayPalAccount();
+
+        $onboardingApi = new \PrestaShop\Module\PrestashopCheckout\Api\Psx\Onboarding();
+        $onboardingApi->deleteOnboarding($merchantId);
 
         // we reset the Live Step banner
         /** @var \PrestaShop\Module\PrestashopCheckout\OnBoarding\Step\LiveStep $stepLive */

@@ -32,7 +32,7 @@ class Onboarding extends PaymentClient
     /**
      * Generate the paypal link to onboard merchant
      *
-     * @return array response (ResponsaApiHandler class)
+     * @return array response (ResponseApiHandler class)
      */
     public function getOnboardingLink()
     {
