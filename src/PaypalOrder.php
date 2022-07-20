@@ -24,6 +24,8 @@ use PrestaShop\Module\PrestashopCheckout\Api\Payment\Order;
 
 /**
  * Allow to instantiate a paypal order
+ * 
+ * @deprecated 2.21
  */
 class PaypalOrder
 {
