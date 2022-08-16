@@ -20,6 +20,8 @@
 
 namespace PrestaShop\Module\PrestashopCheckout;
 
+use PrestaShop\Module\PrestashopCheckout\Repository\PsCheckoutCartRepository;
+
 class UpdatePsCheckoutSessionCommandHandler
 {
     /**
