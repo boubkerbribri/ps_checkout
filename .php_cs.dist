@@ -6,6 +6,7 @@ $config
     ->setUsingCache(true)
     ->getFinder()
     ->in(__DIR__)
+    ->exclude('lib')
     ->exclude('vendor');
 
 return $config;
