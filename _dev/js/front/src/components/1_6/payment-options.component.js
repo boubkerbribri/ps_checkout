@@ -68,6 +68,12 @@ export class PaymentOptionsComponent extends BaseComponent {
       }
     );
 
+    HTMLListenerElements.forEach(({ form }) => {
+      if (form.children[0].nodeName == 'A') {
+        form.children[0].addEventListener('click', (e) => { e.preventDefault() });
+      }
+    });
+
     this.children.paymentOptions.forEach((paymentOption, index) => {
       paymentOption.onLabelClick(() => {
         HTMLListenerElements.forEach(({ button, form }) => {
