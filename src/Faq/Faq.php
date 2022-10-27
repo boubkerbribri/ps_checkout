@@ -20,7 +20,6 @@
 
 namespace PrestaShop\Module\PrestashopCheckout\Faq;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use Prestashop\ModuleLibGuzzleAdapter\ClientFactory;
 
