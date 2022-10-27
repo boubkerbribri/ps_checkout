@@ -30,8 +30,6 @@ class PsxClient extends GenericClient
 {
     public function __construct()
     {
-        parent::__construct();
-
         $client = (new ClientFactory())->getClient([
             'base_url' => (new PsxEnv())->getPsxApiUrl(),
             'verify' => $this->getVerify(),

@@ -37,8 +37,6 @@ class PaymentClient extends GenericClient
 {
     public function __construct(\Link $link, Client $client = null)
     {
-        parent::__construct();
-
         $this->setLink($link);
 
         // Client can be provided for tests
