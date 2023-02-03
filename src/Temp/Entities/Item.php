@@ -47,20 +47,12 @@ class Item
      * @param string $name
      * @param string $quantity
      * @param Money $unitAmount
-     * @param string $category
-     * @param string $description
-     * @param string $sku
-     * @param Money $tax
      */
-    public function __construct($name, $quantity, $unitAmount, $category = '', $description = '', $sku = '', $tax = null)
+    public function __construct($name, $quantity, $unitAmount)
     {
-        $this->name = $name;
-        $this->quantity = $quantity;
-        $this->unitAmount = $unitAmount;
-        $this->category = $category;
-        $this->description = $description;
-        $this->sku = $sku;
-        $this->tax = $tax;
+        $this->setName($name);
+        $this->setQuantity($quantity);
+        $this->setUnitAmount($unitAmount);
     }
 
     /**
@@ -72,11 +64,27 @@ class Item
     }
 
     /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
      * @return string
      */
     public function getQuantity()
     {
         return $this->quantity;
+    }
+
+    /**
+     * @param string $quantity
+     */
+    public function setQuantity($quantity)
+    {
+        $this->quantity = $quantity;
     }
 
     /**
@@ -88,11 +96,27 @@ class Item
     }
 
     /**
+     * @param Money $unitAmount
+     */
+    public function setUnitAmount($unitAmount)
+    {
+        $this->unitAmount = $unitAmount;
+    }
+
+    /**
      * @return string
      */
     public function getCategory()
     {
         return $this->category;
+    }
+
+    /**
+     * @param string $category
+     */
+    public function setCategory($category)
+    {
+        $this->category = $category;
     }
 
     /**
@@ -104,6 +128,14 @@ class Item
     }
 
     /**
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
      * @return string
      */
     public function getSku()
@@ -112,11 +144,27 @@ class Item
     }
 
     /**
+     * @param string $sku
+     */
+    public function setSku($sku)
+    {
+        $this->sku = $sku;
+    }
+
+    /**
      * @return Money
      */
     public function getTax()
     {
         return $this->tax;
+    }
+
+    /**
+     * @param Money $tax
+     */
+    public function setTax($tax)
+    {
+        $this->tax = $tax;
     }
 
     /**

@@ -34,8 +34,8 @@ class PayerName
      */
     public function __construct($givenName, $surname)
     {
-        $this->givenName = $givenName;
-        $this->surname = $surname;
+        $this->setGivenName($givenName);
+        $this->setSurname($surname);
     }
 
     /**
@@ -47,11 +47,27 @@ class PayerName
     }
 
     /**
+     * @param string $givenName
+     */
+    public function setGivenName($givenName)
+    {
+        $this->givenName = $givenName;
+    }
+
+    /**
      * @return string
      */
     public function getSurname()
     {
         return $this->surname;
+    }
+
+    /**
+     * @param string $surname
+     */
+    public function setSurname($surname)
+    {
+        $this->surname = $surname;
     }
 
     /**

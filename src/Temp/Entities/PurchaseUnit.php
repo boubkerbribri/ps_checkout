@@ -53,35 +53,9 @@ class PurchaseUnit
      * @link https://developer.paypal.com/docs/api/orders/v2/#definition-purchase_unit_request
      *
      * @param Amount $amount
-     * @param string $customId
-     * @param string $description
-     * @param string $invoiceId
-     * @param Item[] $items
-     * @param Payee $payee
-     * @param string $referenceId
-     * @param Shipping $shipping
-     * @param string $softDescriptor
      */
-    public function __construct(
-        $amount,
-        $customId = '',
-        $description = '',
-        $invoiceId = '',
-        $items = null,
-        $payee = null,
-        $referenceId = '',
-        $shipping = null,
-        $softDescriptor = ''
-    ) {
-        $this->amount = $amount;
-        $this->customId = $customId;
-        $this->description = $description;
-        $this->invoiceId = $invoiceId;
-        $this->items = $items;
-        $this->payee = $payee;
-        $this->referenceId = $referenceId;
-        $this->shipping = $shipping;
-        $this->softDescriptor = $softDescriptor;
+    public function __construct($amount) {
+        $this->setAmount($amount);
     }
 
     /**
@@ -93,11 +67,27 @@ class PurchaseUnit
     }
 
     /**
+     * @param Amount $amount
+     */
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+    }
+
+    /**
      * @return string
      */
     public function getCustomId()
     {
         return $this->customId;
+    }
+
+    /**
+     * @param string $customId
+     */
+    public function setCustomId($customId)
+    {
+        $this->customId = $customId;
     }
 
     /**
@@ -109,11 +99,27 @@ class PurchaseUnit
     }
 
     /**
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
      * @return string
      */
     public function getInvoiceId()
     {
         return $this->invoiceId;
+    }
+
+    /**
+     * @param string $invoiceId
+     */
+    public function setInvoiceId($invoiceId)
+    {
+        $this->invoiceId = $invoiceId;
     }
 
     /**
@@ -125,11 +131,27 @@ class PurchaseUnit
     }
 
     /**
+     * @param Item[] $items
+     */
+    public function setItems($items)
+    {
+        $this->items = $items;
+    }
+
+    /**
      * @return Payee
      */
     public function getPayee()
     {
         return $this->payee;
+    }
+
+    /**
+     * @param Payee $payee
+     */
+    public function setPayee($payee)
+    {
+        $this->payee = $payee;
     }
 
     /**
@@ -141,6 +163,14 @@ class PurchaseUnit
     }
 
     /**
+     * @param string $referenceId
+     */
+    public function setReferenceId($referenceId)
+    {
+        $this->referenceId = $referenceId;
+    }
+
+    /**
      * @return Shipping
      */
     public function getShipping()
@@ -149,11 +179,27 @@ class PurchaseUnit
     }
 
     /**
+     * @param Shipping $shipping
+     */
+    public function setShipping($shipping)
+    {
+        $this->shipping = $shipping;
+    }
+
+    /**
      * @return string
      */
     public function getSoftDescriptor()
     {
         return $this->softDescriptor;
+    }
+
+    /**
+     * @param string $softDescriptor
+     */
+    public function setSoftDescriptor($softDescriptor)
+    {
+        $this->softDescriptor = $softDescriptor;
     }
 
     public function toArray()

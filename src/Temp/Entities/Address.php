@@ -62,27 +62,10 @@ class Address
      * @see https://developer.paypal.com/docs/api/orders/v2/#definition-address_portable
      *
      * @param string $countryCode
-     * @param string $addressLine1
-     * @param string $addressLine2
-     * @param string $adminArea1
-     * @param string $adminArea2
-     * @param string $postalCode
      */
-    public function __construct(
-        $countryCode,
-        $addressLine1 = '',
-        $addressLine2 = '',
-        $adminArea1 = '',
-        $adminArea2 = '',
-        $postalCode = ''
-    )
+    public function __construct($countryCode)
     {
-        $this->countryCode = $countryCode;
-        $this->addressLine1 = $addressLine1;
-        $this->addressLine2 = $addressLine2;
-        $this->adminArea1 = $adminArea1;
-        $this->adminArea2 = $adminArea2;
-        $this->postalCode = $postalCode;
+        $this->setCountryCode($countryCode);
     }
 
     /**
@@ -94,18 +77,43 @@ class Address
     }
 
     /**
+     * @param string $addressLine1
+     */
+    public function setAddressLine1($addressLine1)
+    {
+        $this->addressLine1 = $addressLine1;
+    }
+
+    /**
      * @return string
      */
     public function getAddressLine2()
     {
         return $this->addressLine2;
     }
+
+    /**
+     * @param string $addressLine2
+     */
+    public function setAddressLine2($addressLine2)
+    {
+        $this->addressLine2 = $addressLine2;
+    }
+
     /**
      * @return string
      */
     public function getAdminArea1()
     {
         return $this->adminArea1;
+    }
+
+    /**
+     * @param string $adminArea1
+     */
+    public function setAdminArea1($adminArea1)
+    {
+        $this->adminArea1 = $adminArea1;
     }
 
     /**
@@ -117,6 +125,14 @@ class Address
     }
 
     /**
+     * @param string $adminArea2
+     */
+    public function setAdminArea2($adminArea2)
+    {
+        $this->adminArea2 = $adminArea2;
+    }
+
+    /**
      * @return string
      */
     public function getCountryCode()
@@ -125,11 +141,27 @@ class Address
     }
 
     /**
+     * @param string $countryCode
+     */
+    public function setCountryCode($countryCode)
+    {
+        $this->countryCode = $countryCode;
+    }
+
+    /**
      * @return string
      */
     public function getPostalCode()
     {
         return $this->postalCode;
+    }
+
+    /**
+     * @param string $postalCode
+     */
+    public function setPostalCode($postalCode)
+    {
+        $this->postalCode = $postalCode;
     }
 
     public function toArray()

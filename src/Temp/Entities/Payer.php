@@ -48,21 +48,11 @@ class Payer
      *
      * @param string $emailAddress
      * @param string $payerId
-     * @param PayerName $name
-     * @param Address $address
-     * @param string $birthDate
-     * @param PhoneWithType $phone
-     * @param PayerTaxInfo $taxInfo
      */
-    public function __construct($emailAddress, $payerId, $name = null, $address = null, $birthDate = '', $phone = null, $taxInfo = null)
+    public function __construct($emailAddress, $payerId)
     {
-        $this->emailAddress = $emailAddress;
-        $this->payerId = $payerId;
-        $this->name = $name;
-        $this->address = $address;
-        $this->birthDate = $birthDate;
-        $this->phone = $phone;
-        $this->taxInfo = $taxInfo;
+        $this->setEmailAddress($emailAddress);
+        $this->setPayerId($payerId);
     }
 
     /**
@@ -74,11 +64,27 @@ class Payer
     }
 
     /**
+     * @param Address $address
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+    }
+
+    /**
      * @return string
      */
     public function getBirthDate()
     {
         return $this->birthDate;
+    }
+
+    /**
+     * @param string $birthDate
+     */
+    public function setBirthDate($birthDate)
+    {
+        $this->birthDate = $birthDate;
     }
 
     /**
@@ -90,11 +96,27 @@ class Payer
     }
 
     /**
+     * @param string $emailAddress
+     */
+    public function setEmailAddress($emailAddress)
+    {
+        $this->emailAddress = $emailAddress;
+    }
+
+    /**
      * @return PayerName
      */
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @param PayerName $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
     }
 
     /**
@@ -106,6 +128,14 @@ class Payer
     }
 
     /**
+     * @param string $payerId
+     */
+    public function setPayerId($payerId)
+    {
+        $this->payerId = $payerId;
+    }
+
+    /**
      * @return PhoneWithType
      */
     public function getPhone()
@@ -114,11 +144,27 @@ class Payer
     }
 
     /**
+     * @param PhoneWithType $phone
+     */
+    public function setPhone($phone)
+    {
+        $this->phone = $phone;
+    }
+
+    /**
      * @return PayerTaxInfo
      */
     public function getTaxInfo()
     {
         return $this->taxInfo;
+    }
+
+    /**
+     * @param PayerTaxInfo $taxInfo
+     */
+    public function setTaxInfo($taxInfo)
+    {
+        $this->taxInfo = $taxInfo;
     }
 
     /** return sha1 of the object */

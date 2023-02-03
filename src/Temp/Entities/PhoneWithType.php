@@ -30,12 +30,10 @@ class PhoneWithType
 
     /**
      * @param Phone $phoneNumber
-     * @param string $phoneType
      */
-    public function __construct($phoneNumber, $phoneType = '')
+    public function __construct($phoneNumber)
     {
-        $this->phoneNumber = $phoneNumber;
-        $this->phoneType = $phoneType;
+        $this->setPhoneNumber($phoneNumber);
     }
 
     /**
@@ -47,11 +45,27 @@ class PhoneWithType
     }
 
     /**
+     * @param Phone $phoneNumber
+     */
+    public function setPhoneNumber($phoneNumber)
+    {
+        $this->phoneNumber = $phoneNumber;
+    }
+
+    /**
      * @return string
      */
     public function getPhoneType()
     {
         return $this->phoneType;
+    }
+
+    /**
+     * @param string $phoneType
+     */
+    public function setPhoneType($phoneType)
+    {
+        $this->phoneType = $phoneType;
     }
 
     /**
