@@ -148,18 +148,78 @@ class CreateOrderPayloadBuilder
     {
         $data = [];
 
-        $money = new Money($this->orderDataProvider->getCurrencyCode(), $this->orderDataProvider->getCartTotalAmount());
-        $breakdown = new AmountBreakdown();
+        $breakdownItemTotal = $breakdownTaxTotal = $breakdownHandling = $breakdownDiscount = 0;
+        $breakdownInsurance = $breakdownShippingDiscount = 0;
+        $breakdownShipping = $this->orderDataProvider->getShippingCost();
+        $amountTotal = $this->orderDataProvider->getCartTotalAmount();
+        $currencyCode = $this->orderDataProvider->getCurrencyCode();
 
         $cartItems = $this->orderDataProvider->getCartItems();
         foreach ($cartItems as $cartItem) {
-            // TODO
-            $item = new Item();
+            $totalWithoutTax = $cartItem['total'];
+            $totalWithTax = $cartItem['total_wt'];
+            $totalTax = $totalWithTax - $totalWithoutTax;
+            $quantity = $cartItem['quantity'];
+            $unitPriceWithoutTax = $this->formatAmount($totalWithoutTax / $quantity);
+            $unitTax = $this->formatAmount($totalTax / $quantity);
+            $breakdownItemTotal += $unitPriceWithoutTax * $quantity;
+            $breakdownTaxTotal += $unitTax * $quantity;
+
+            $sku = '';
+            if (!empty($value['reference'])) {
+                $sku = $value['reference'];
+            }
+
+            if (!empty($value['ean13'])) {
+                $sku = $value['ean13'];
+            }
+
+            if (!empty($value['isbn'])) {
+                $sku = $value['isbn'];
+            }
+
+            if (!empty($value['upc'])) {
+                $sku = $value['upc'];
+            }
+
+            $category = $cartItem['is_virtual'] === '1' ? 'DIGITAL_GOODS' : 'PHYSICAL_GOODS';
+            $description = !empty($cartItem['attributes']) ? $this->truncate($cartItem['attributes']) : '';
+            $unitAmount = new Money($currencyCode, $unitPriceWithoutTax);
+            $item = new Item($this->truncate($cartItem['name']), $quantity, $unitAmount);
+            $item->setCategory($category);
+            $item->setDescription($description);
+            $item->setSku($sku);
+            $item->setTax(new Money($this->orderDataProvider->getCurrencyCode(), $unitTax));
+
             $data['items'][] = $item;
         }
 
-        $data['amount'] = new Amount($money, $breakdown);
+        $breakdownHandling += $this->orderDataProvider->getGiftWrappingAmount();
+
+        $remainderValue = $amountTotal - $breakdownItemTotal - $breakdownTaxTotal - $breakdownShipping - $breakdownHandling;
+        // In case of rounding issue, if remainder value is negative we use discount value to deduct remainder and if remainder value is positive we use handling value to add remainder
+        if ($remainderValue < 0) {
+            $breakdownDiscount += abs($remainderValue);
+        } else {
+            $breakdownHandling += $remainderValue;
+        }
+
+        $breakdown = new AmountBreakdown();
+        $breakdown->setDiscount(new Money($currencyCode, $breakdownDiscount));
+        $breakdown->setHandling(new Money($currencyCode, $breakdownHandling));
+        $breakdown->setInsurance(new Money($currencyCode, $breakdownInsurance));
+        $breakdown->setItemTotal(new Money($currencyCode, $breakdownItemTotal));
+        $breakdown->setShipping(new Money($currencyCode, $breakdownShipping));
+        $breakdown->setShippingDiscount(new Money($currencyCode, $breakdownShippingDiscount));
+        $breakdown->setTaxTotal(new Money($currencyCode, $breakdownTaxTotal));
+
+        $data['amount'] = new Amount(new Money($this->orderDataProvider->getCurrencyCode(), $amountTotal), $breakdown);
 
         return $data;
+    }
+
+    private function truncate($str, $limit = 127)
+    {
+        return mb_substr($str, 0, $limit);
     }
 }

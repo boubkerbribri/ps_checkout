@@ -25,30 +25,20 @@ class AmountBreakdown
     /** @var Money */
     private $taxTotal;
 
-    public function __construct(
-        $discount = null,
-        $handling = null,
-        $insurance = null,
-        $itemTotal = null,
-        $shipping = null,
-        $shippingDiscount = null,
-        $taxTotal = null
-    ) {
-        $this->discount = $discount;
-        $this->handling = $handling;
-        $this->insurance = $insurance;
-        $this->itemTotal = $itemTotal;
-        $this->shipping = $shipping;
-        $this->shippingDiscount = $shippingDiscount;
-        $this->taxTotal = $taxTotal;
-    }
-
     /**
      * @return Money
      */
     public function getDiscount()
     {
         return $this->discount;
+    }
+
+    /**
+     * @param Money $discount
+     */
+    public function setDiscount($discount)
+    {
+        $this->discount = $discount;
     }
 
     /**
@@ -60,11 +50,27 @@ class AmountBreakdown
     }
 
     /**
+     * @param Money $handling
+     */
+    public function setHandling($handling)
+    {
+        $this->handling = $handling;
+    }
+
+    /**
      * @return Money
      */
     public function getInsurance()
     {
         return $this->insurance;
+    }
+
+    /**
+     * @param Money $insurance
+     */
+    public function setInsurance($insurance)
+    {
+        $this->insurance = $insurance;
     }
 
     /**
@@ -76,11 +82,27 @@ class AmountBreakdown
     }
 
     /**
+     * @param Money $itemTotal
+     */
+    public function setItemTotal($itemTotal)
+    {
+        $this->itemTotal = $itemTotal;
+    }
+
+    /**
      * @return Money
      */
     public function getShipping()
     {
         return $this->shipping;
+    }
+
+    /**
+     * @param Money $shipping
+     */
+    public function setShipping($shipping)
+    {
+        $this->shipping = $shipping;
     }
 
     /**
@@ -92,11 +114,27 @@ class AmountBreakdown
     }
 
     /**
+     * @param Money $shippingDiscount
+     */
+    public function setShippingDiscount($shippingDiscount)
+    {
+        $this->shippingDiscount = $shippingDiscount;
+    }
+
+    /**
      * @return Money
      */
     public function getTaxTotal()
     {
         return $this->taxTotal;
+    }
+
+    /**
+     * @param Money $taxTotal
+     */
+    public function setTaxTotal($taxTotal)
+    {
+        $this->taxTotal = $taxTotal;
     }
 
     public function toArray()

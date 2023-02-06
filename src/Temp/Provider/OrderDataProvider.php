@@ -293,6 +293,8 @@ class OrderDataProvider
     }
 
     /**
+     * @TODO
+     *
      * @return string
      */
     public function getPurchaseUnitInvoiceId()
@@ -301,6 +303,8 @@ class OrderDataProvider
     }
 
     /**
+     * @TODO
+     *
      * @return string
      */
     public function getPurchaseUnitReferenceId()
@@ -409,5 +413,18 @@ class OrderDataProvider
     public function getShippingType()
     {
         return true ? 'SHIPPING' : 'PICKUP_IN_PERSON';
+    }
+
+    /**
+     * @return string
+     */
+    public function getShippingCost()
+    {
+        return $this->cart['cart']['shipping_cost'];
+    }
+
+    public function getGiftWrappingAmount()
+    {
+        return !empty($this->cart['cart']['subtotals']['gift_wrapping']['amount']);
     }
 }
