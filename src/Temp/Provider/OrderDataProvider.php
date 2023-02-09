@@ -24,74 +24,18 @@ use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumberType;
 use libphonenumber\PhoneNumberUtil;
 use PrestaShop\Module\PrestashopCheckout\PaypalCountryCodeMatrice;
-use PrestaShop\Module\PrestashopCheckout\Repository\PaypalAccountRepository;
 
-/**
- * Configuration
- * Context
- * Shop
- * Customer
- * Address (Invoice & Shipping)
- * PsCheckoutCart
- * Currency
- * Country
- * State
- * Language
- * Formatter (PhoneFormatter, LocaleFormatter, CountryFormatter, CurrencyFormatter....)
- */
 class OrderDataProvider
 {
-    /** @var \CartCore */
-    private $cart;
-
-    /** @var \ContextCore */
-    private $context;
-
-    /** @var \CurrencyCore */
-    private $currency;
-
-    /** @var \CustomerCore */
-    private $customer;
-
-    /** @var \AddressCore */
-    private $deliveryAddress;
-
-    /** @var \AddressCore */
-    private $invoiceAddress;
-
-    /** @var \ShopCore */
-    private $shop;
-
-    /** @var PaypalAccountRepository */
-    private $paypalAccountRepository;
-
-    /** @var \PsCheckoutCart */
-    private $psCheckout;
+    /** @var array */
+    private $orderData;
 
     /**
-     * @param PaypalAccountRepository $accountRepository
+     * @param array $orderData
      */
-    public function __construct($accountRepository)
+    public function __construct($orderData)
     {
-        $this->context = \Context::getContext();
-        $this->cart = $this->context->cart;
-        $this->currency = new \CurrencyCore(
-            $this->cart->id_currency,
-            $this->cart->id_lang,
-            $this->cart->id_shop
-        );
-        $this->customer = new \CustomerCore($this->cart->id_customer);
-        $this->deliveryAddress = new \AddressCore(
-            $this->cart->id_address_delivery,
-            $this->cart->id_lang
-        );
-        $this->invoiceAddress = new \AddressCore(
-            $this->cart->id_address_invoice,
-            $this->cart->id_lang
-        );
-        $this->shop = $this->context->shop;
-        $this->paypalAccountRepository = $accountRepository;
-        $this->psCheckout = new \PsCheckoutCart();
+        $this->orderData = $orderData;
     }
 
     /**
@@ -99,7 +43,15 @@ class OrderDataProvider
      */
     public function getBrandName()
     {
-        return $this->shop->name;
+        return $this->orderData['shop']['name'];
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExpressCheckout()
+    {
+        return $this->orderData['psCheckout']['isExpressCheckout'];
     }
 
     /**
@@ -111,19 +63,11 @@ class OrderDataProvider
     }
 
     /**
-     * @return bool
-     */
-    public function isExpressCheckout()
-    {
-        return $this->psCheckout->isExpressCheckout();
-    }
-
-    /**
      * @return string
      */
     public function getPayerGivenName()
     {
-        return $this->invoiceAddress->firstname;
+        return $this->orderData['payer']['given_name'];
     }
 
     /**
@@ -131,7 +75,7 @@ class OrderDataProvider
      */
     public function getPayerSurname()
     {
-        return $this->invoiceAddress->lastname;
+        return $this->orderData['payer']['surname'];
     }
 
     /**
@@ -140,7 +84,7 @@ class OrderDataProvider
     public function getPayerCountryCode()
     {
         $paypalCountryCodeMatrice = new PaypalCountryCodeMatrice();
-        $isoCode = strtoupper(\CountryCore::getIsoById($this->invoiceAddress->id_country));
+        $isoCode = strtoupper(\CountryCore::getIsoById($this->orderData['payer']['id_country']));
 
         return $paypalCountryCodeMatrice->getPaypalIsoCode($isoCode);
     }
@@ -150,7 +94,7 @@ class OrderDataProvider
      */
     public function getPayerAddressLine1()
     {
-        return $this->invoiceAddress->address1;
+        return $this->orderData['payer']['address_line_1'];
     }
 
     /**
@@ -158,7 +102,7 @@ class OrderDataProvider
      */
     public function getPayerAddressLine2()
     {
-        return $this->invoiceAddress->address2;
+        return $this->orderData['payer']['address_line_2'];
     }
 
     /**
@@ -166,7 +110,7 @@ class OrderDataProvider
      */
     public function getPayerAdminArea1()
     {
-        return \StateCore::getNameById($this->invoiceAddress->id_state);
+        return \StateCore::getNameById($this->orderData['payer']['id_state']);
     }
 
     /**
@@ -174,7 +118,7 @@ class OrderDataProvider
      */
     public function getPayerAdminArea2()
     {
-        return $this->invoiceAddress->city;
+        return $this->orderData['payer']['admin_area_2'];
     }
 
     /**
@@ -182,7 +126,7 @@ class OrderDataProvider
      */
     public function getPayerPostalCode()
     {
-        return $this->invoiceAddress->postcode;
+        return $this->orderData['payer']['postcode'];
     }
 
     /**
@@ -190,7 +134,7 @@ class OrderDataProvider
      */
     public function getPayerBirthdate()
     {
-        return (!empty($this->customer->birthday) && $this->customer->birthday !== '0000-00-00') ? $this->customer->birthday : '';
+        return ($this->orderData['customer']['birthday'] !== '0000-00-00') ? $this->orderData['customer']['birthday'] : '';
     }
 
     /**
@@ -198,17 +142,15 @@ class OrderDataProvider
      */
     public function getPayerEmailAddress()
     {
-        return $this->customer->email;
+        return $this->orderData['customer']['email_address'];
     }
 
     /**
-     * TODO
-     *
      * @return string
      */
     public function getPayerId()
     {
-        return '';
+        return $this->orderData['payer']['payer_id'];
     }
 
     /**
@@ -216,9 +158,9 @@ class OrderDataProvider
      */
     public function getPayerPhone()
     {
-        $phone = !empty($this->invoiceAddress->phone) ? $this->invoiceAddress->phone : '';
+        $phone = !empty($this->orderData['payer']['phone']) ? $this->orderData['payer']['phone'] : '';
 
-        return (empty($phone) && !empty($this->invoiceAddress->phone_mobile)) ? $this->invoiceAddress->phone_mobile : $phone;
+        return (empty($phone) && !empty($this->orderData['payer']['phone_mobile'])) ? $this->orderData['payer']['phone_mobile'] : $phone;
     }
 
     /**
@@ -261,7 +203,7 @@ class OrderDataProvider
      */
     public function getCurrencyCode()
     {
-        return $this->currency->iso_code;
+        return $this->orderData['currency']['iso_code'];
     }
 
     /**
@@ -269,19 +211,15 @@ class OrderDataProvider
      */
     public function getCartTotalAmount()
     {
-        try {
-            return $this->cart->getOrderTotal();
-        } catch (\Exception $e) {}
-
-        return 0;
+        return $this->orderData['cart']['total_with_taxes'];
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getPurchaseUnitCustomId()
     {
-        return $this->cart->id;
+        return $this->orderData['cart']['id'];
     }
 
     /**
@@ -289,7 +227,11 @@ class OrderDataProvider
      */
     public function getPurchaseUnitDescription()
     {
-        return mb_substr('Checking out with your cart #' . $this->cart->id . ' from ' . $this->getBrandName(), 0, 127);
+        return mb_substr(
+            'Checking out with your cart #' . $this->getPurchaseUnitCustomId() . ' from ' . $this->getBrandName(),
+            0,
+            127
+        );
     }
 
     /**
@@ -325,7 +267,7 @@ class OrderDataProvider
      */
     public function getPayeeEmailAddress()
     {
-        return $this->paypalAccountRepository->getMerchantEmail();
+        return $this->orderData['payee']['email_address'];
     }
 
     /**
@@ -333,7 +275,7 @@ class OrderDataProvider
      */
     public function getPayeeMerchantId()
     {
-        return $this->paypalAccountRepository->getMerchantId();
+        return $this->orderData['payee']['merchant_id'];
     }
 
     /**
@@ -341,7 +283,7 @@ class OrderDataProvider
      */
     public function getCartItems()
     {
-        return $this->cart->getProducts();
+        return $this->orderData['cart']['items'];
     }
 
     /**
@@ -350,7 +292,7 @@ class OrderDataProvider
     public function getShippingCountryCode()
     {
         $paypalCountryCodeMatrice = new PaypalCountryCodeMatrice();
-        $isoCode = strtoupper(\CountryCore::getIsoById($this->deliveryAddress->id_country));
+        $isoCode = strtoupper(\CountryCore::getIsoById($this->orderData['shipping']['id_country']));
 
         return $paypalCountryCodeMatrice->getPaypalIsoCode($isoCode);
     }
@@ -360,7 +302,7 @@ class OrderDataProvider
      */
     public function getShippingAddressLine1()
     {
-        return $this->deliveryAddress->address1;
+        return $this->orderData['shipping']['address_line_1'];
     }
 
     /**
@@ -368,7 +310,7 @@ class OrderDataProvider
      */
     public function getShippingAddressLine2()
     {
-        return $this->deliveryAddress->address2;
+        return $this->orderData['shipping']['address_line_2'];
     }
 
     /**
@@ -376,7 +318,7 @@ class OrderDataProvider
      */
     public function getShippingAdminArea1()
     {
-        return \StateCore::getNameById($this->deliveryAddress->id_state);
+        return \StateCore::getNameById($this->orderData['shipping']['id_state']);
     }
 
     /**
@@ -384,7 +326,7 @@ class OrderDataProvider
      */
     public function getShippingAdminArea2()
     {
-        return $this->deliveryAddress->city;
+        return $this->orderData['shipping']['city'];
     }
 
     /**
@@ -392,7 +334,23 @@ class OrderDataProvider
      */
     public function getShippingPostalCode()
     {
-        return $this->deliveryAddress->postcode;
+        return $this->orderData['shipping']['postcode'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getShippingSurname()
+    {
+        return $this->orderData['shipping']['surname'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getShippingGivenName()
+    {
+        return $this->orderData['shipping']['given_name'];
     }
 
     /**
@@ -400,9 +358,9 @@ class OrderDataProvider
      */
     public function getShippingFullName()
     {
-        $gender = new \GenderCore($this->customer->id_gender, $this->cart->id_lang);
+        $gender = new \GenderCore($this->orderData['customer']['id_gender'], $this->orderData['cart']['id_lang']);
 
-        return $gender->name . ' ' . $this->deliveryAddress->lastname . ' ' . $this->deliveryAddress->firstname;
+        return $gender->name . ' ' . $this->getShippingSurname() . ' ' . $this->getShippingGivenName();
     }
 
     /**
@@ -420,11 +378,14 @@ class OrderDataProvider
      */
     public function getShippingCost()
     {
-        return $this->cart['cart']['shipping_cost'];
+        return $this->orderData['cart']['shipping_cost'];
     }
 
+    /**
+     * @return float
+     */
     public function getGiftWrappingAmount()
     {
-        return !empty($this->cart['cart']['subtotals']['gift_wrapping']['amount']);
+        return $this->orderData['cart']['subtotals']['gift_wrapping']['amount'];
     }
 }

@@ -222,4 +222,18 @@ class CreateOrderPayloadBuilder
     {
         return mb_substr($str, 0, $limit);
     }
+
+    private function formatAmount($amount)
+    {
+        return sprintf("%01.{$this->getNbDecimalToRound()}f", $amount);
+    }
+
+    private function getNbDecimalToRound()
+    {
+        if (in_array($this->orderDataProvider->getCurrencyCode(), ['HUF', 'JPY', 'TWD'], true)) {
+            return 0;
+        }
+
+        return 2;
+    }
 }

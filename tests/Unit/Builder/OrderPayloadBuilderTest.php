@@ -21,67 +21,108 @@
 namespace Tests\Unit\Builder;
 
 use PHPUnit\Framework\TestCase;
+use PrestaShop\Module\PrestashopCheckout\Configuration\PrestaShopConfiguration;
+use PrestaShop\Module\PrestashopCheckout\Configuration\PrestaShopConfigurationOptionsResolver;
+use PrestaShop\Module\PrestashopCheckout\Repository\PaypalAccountRepository;
 use PrestaShop\Module\PrestashopCheckout\Temp\Builder\CreateOrderPayloadBuilder;
-use PrestaShop\Module\PrestashopCheckout\Temp\Helper\OrderDataHelper;
+use PrestaShop\Module\PrestashopCheckout\Temp\Factory\OrderDataFactory;
 use PrestaShop\Module\PrestashopCheckout\Temp\Provider\OrderDataProvider;
 
 class OrderPayloadBuilderTest extends TestCase
 {
     public function testPayloadCreation()
     {
-        $orderDataHelperMock = $this->createMock(OrderDataHelper::class);
-        $orderDataHelperMock->method('getPayPalIsoCode')->willReturn('FR');
-        $orderDataHelperMock->method('getStateNameById')->willReturn('France');
-
-        $orderPayloadBuilder = new CreateOrderPayloadBuilder(new OrderDataProvider($this->getCartData(), $orderDataHelperMock));
-        $payload = $orderPayloadBuilder->buildPayload();
-
-        $this->checkPayloadApplicationContext($payload);
+        $orderFactory = new OrderDataFactory(new PaypalAccountRepository(new PrestaShopConfiguration(new PrestaShopConfigurationOptionsResolver(1))));
+        $orderBuilder = $orderFactory->createFromArray($this->getData());
+        $payload = $orderBuilder->buildPayload();
         $this->checkPayloadPayer($payload);
+        $this->checkPayloadApplicationContext($payload);
         $this->checkPayloadPurchaseUnits($payload);
     }
 
     /**
      * @return array
      */
-    private function getCartData()
+    public function getData()
     {
         return [
+            'cart' => [
+                'id' => 3,
+                'id_lang' => 1,
+                'items' => $this->getCartItems(),
+                'shipping_cost' => 5.70,
+                'subtotals' => [
+                    'gift_wrapping' => [
+                        'amount' => 0
+                    ]
+                ],
+                'total_with_taxes' => 83
+            ],
+            'currency' => [
+                'iso_code' => 1
+            ],
+            'customer' => [
+                'birthday' => '1990-01-01',
+                'email_address' => 'john.doe@mail.fr',
+                'id_gender' => 1
+            ],
+            'payee' => [
+                'email_address' => 'nhoj.eod@prestatest.fr',
+                'merchant_id' => '716537O08'
+            ],
+            'payer' => [
+                'address_line_1' => '16 rue des champs',
+                'address_line_2' => 'Appartement 23',
+                'admin_area_2' => 'Paris',
+                'given_name' => 'John',
+                'id_country' => 1,
+                'id_state' => 1,
+                'surname' => 'Doe',
+                'payer_id' => '',
+                'phone' => '',
+                'phone_mobile' => '0612345678',
+                'postcode' => '75000'
+            ],
+            'psCheckout' => [
+                'isExpressCheckout' => false
+            ],
+            'shipping' => [
+                'address_line_1' => '5 rue du port',
+                'address_line_2' => 'Appartement 4',
+                'admin_area_2' => 'Le Mans',
+                'given_name' => 'Johnny',
+                'id_country' => 1,
+                'id_state' => 1,
+                'surname' => 'Doe',
+                'postcode' => '72000'
+            ],
             'shop' => [
                 'name' => 'PrestaTest'
+            ]
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getCartItems()
+    {
+        return [
+            [
+                'attributes' => 'Coupe classique, col rond, manches courtes',
+                'is_virtual' => '0',
+                'name' => 'Pull imprime',
+                'quantity' => 2,
+                'total' => 37.80,
+                'total_wt' => 40
             ],
-            'ps_checkout' => [
-                'isExpressCheckout' => true
-            ],
-            'cart' => [
-                'addresses' => [
-                    'invoice' => [
-                        'address1' => '4 rue Jules Lefebvre',
-                        'address2' => '6eme etage',
-                        'city' => 'Paris',
-                        'firstname' => 'John',
-                        'id_country' => '1',
-                        'id_state' => '1',
-                        'lastname' => 'Doe',
-                        'phone' => '',
-                        'phone_mobile' => '0612345678',
-                        'postcode' => '75000'
-                    ]
-                ],
-                'cart' => [
-                    'totals' => [
-                        'total_including_tax' => [
-                            'amount' => 299.99
-                        ]
-                    ]
-                ],
-                'currency' => [
-                    'iso_code' => 'EUR'
-                ],
-                'customer' => [
-                    'birthday' => '1990-01-01',
-                    'email' => 'john.doe@prestashop.com'
-                ]
+            [
+                'attributes' => 'Mug rouge en ceramique, avec une anse',
+                'is_virtual' => '0',
+                'name' => 'Mug',
+                'quantity' => 1,
+                'total' => 2.60,
+                'total_wt' => 3
             ]
         ];
     }
