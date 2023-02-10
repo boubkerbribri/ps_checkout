@@ -33,8 +33,7 @@ class OrderPayloadBuilderTest extends TestCase
     public function testPayloadCreation()
     {
         $orderFactory = new OrderDataFactory(new PaypalAccountRepository(new PrestaShopConfiguration(new PrestaShopConfigurationOptionsResolver(1))));
-        $orderBuilder = $orderFactory->createFromArray($this->getData());
-        $payload = $orderBuilder->buildPayload();
+        $payload = $orderFactory->createFromArray($this->getData());
         $this->checkPayloadPayer($payload);
         $this->checkPayloadApplicationContext($payload);
         $this->checkPayloadPurchaseUnits($payload);

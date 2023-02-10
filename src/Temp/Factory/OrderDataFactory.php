@@ -35,7 +35,7 @@ class OrderDataFactory
     }
 
     /**
-     * @return CreateOrderPayloadBuilder
+     * @return array
      */
     public function createFromContext()
     {
@@ -122,10 +122,11 @@ class OrderDataFactory
     /**
      * @param array $data
      *
-     * @return CreateOrderPayloadBuilder
+     * @return array
      */
     public function createFromArray(array $data)
     {
-        return new CreateOrderPayloadBuilder(new OrderDataProvider($data));
+        $builder = new CreateOrderPayloadBuilder(new OrderDataProvider($data));
+        return $builder->buildPayload();
     }
 }
