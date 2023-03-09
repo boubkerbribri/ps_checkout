@@ -51,32 +51,32 @@ class CreateOrderPayloadBuilder
     /**
      * @return array
      */
-    public function buildPayload()
+    public function buildPayload($toArray)
     {
         return [
-            'application_context' => $this->buildApplicationContextNode(),
+            'application_context' => $this->buildApplicationContextNode($toArray),
             'intent' => 'CAPTURE',
-            'payer' => $this->buildPayerNode(),
-            'purchase_units' => $this->buildPurchaseUnitsNode()
+            'payer' => $this->buildPayerNode($toArray),
+            'purchase_units' => $this->buildPurchaseUnitsNode($toArray)
         ];
     }
 
     /**
-     * @return array
+     * @return array|ApplicationContext
      */
-    private function buildApplicationContextNode()
+    private function buildApplicationContextNode($toArray)
     {
         $applicationContext = new ApplicationContext();
         $applicationContext->setBrandName($this->orderDataProvider->getBrandName());
         $applicationContext->setShippingPreference($this->orderDataProvider->getShippingPreference());
 
-        return $applicationContext->toArray();
+        return $toArray ? $applicationContext->toArray() : $applicationContext;
     }
 
     /**
-     * @return array
+     * @return array|Payer
      */
-    private function buildPayerNode()
+    private function buildPayerNode($toArray)
     {
         $payerName = new PayerName(
             $this->orderDataProvider->getPayerGivenName(),
@@ -100,13 +100,13 @@ class CreateOrderPayloadBuilder
         $payer->setPhone($phone);
         $payer->setTaxInfo(null);
 
-        return $payer->toArray();
+        return $toArray ? $payer->toArray() : $payer;
     }
 
     /**
      * @return array
      */
-    private function buildPurchaseUnitsNode()
+    private function buildPurchaseUnitsNode($toArray)
     {
         $payee = new Payee(
             $this->orderDataProvider->getPayeeEmailAddress(),
@@ -138,7 +138,7 @@ class CreateOrderPayloadBuilder
         $purchaseUnit->setShipping($shipping);
         $purchaseUnit->setSoftDescriptor($this->orderDataProvider->getPurchaseUnitSoftDescriptor());
 
-        return [$purchaseUnit->toArray()];
+        return $toArray ? [$purchaseUnit->toArray()] : [$purchaseUnit];
     }
 
     /**

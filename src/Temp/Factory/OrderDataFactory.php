@@ -22,6 +22,7 @@ namespace PrestaShop\Module\PrestashopCheckout\Temp\Factory;
 
 use PrestaShop\Module\PrestashopCheckout\Repository\PaypalAccountRepository;
 use PrestaShop\Module\PrestashopCheckout\Temp\Builder\CreateOrderPayloadBuilder;
+use PrestaShop\Module\PrestashopCheckout\Temp\Adapter\OrderDataAdapter;
 use PrestaShop\Module\PrestashopCheckout\Temp\Provider\OrderDataProvider;
 
 class OrderDataFactory
@@ -29,15 +30,19 @@ class OrderDataFactory
     /** @var PaypalAccountRepository */
     private $accountRepository;
 
-    public function __construct($accountRepository)
+    /** @var OrderDataAdapter */
+    private $orderDataAdapter;
+
+    public function __construct($accountRepository, $orderDataAdapter)
     {
         $this->accountRepository = $accountRepository;
+        $this->orderDataAdapter = $orderDataAdapter;
     }
 
     /**
      * @return array
      */
-    public function createFromContext()
+    public function createFromContext($toArray = true)
     {
         $context = \Context::getContext();
         /** @var \CartCore $cart */
@@ -116,7 +121,7 @@ class OrderDataFactory
             ]
         ];
 
-        return $this->createFromArray($data);
+        return $this->createFromArray($data, $toArray);
     }
 
     /**
@@ -124,9 +129,9 @@ class OrderDataFactory
      *
      * @return array
      */
-    public function createFromArray(array $data)
+    public function createFromArray(array $data, $toArray = true)
     {
-        $builder = new CreateOrderPayloadBuilder(new OrderDataProvider($data));
-        return $builder->buildPayload();
+        $builder = new CreateOrderPayloadBuilder(new OrderDataProvider($data, $this->orderDataAdapter));
+        return $builder->buildPayload($toArray);
     }
 }

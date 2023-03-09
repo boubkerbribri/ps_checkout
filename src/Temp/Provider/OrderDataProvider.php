@@ -24,18 +24,23 @@ use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumberType;
 use libphonenumber\PhoneNumberUtil;
 use PrestaShop\Module\PrestashopCheckout\PaypalCountryCodeMatrice;
+use PrestaShop\Module\PrestashopCheckout\Temp\Adapter\OrderDataAdapter;
 
 class OrderDataProvider
 {
     /** @var array */
     private $orderData;
 
+    /** @var OrderDataAdapter */
+    private $orderDataAdapter;
+
     /**
      * @param array $orderData
      */
-    public function __construct($orderData)
+    public function __construct($orderData, $orderDataAdapter)
     {
         $this->orderData = $orderData;
+        $this->orderDataAdapter = $orderDataAdapter;
     }
 
     /**
@@ -84,7 +89,7 @@ class OrderDataProvider
     public function getPayerCountryCode()
     {
         $paypalCountryCodeMatrice = new PaypalCountryCodeMatrice();
-        $isoCode = strtoupper(\CountryCore::getIsoById($this->orderData['payer']['id_country']));
+        $isoCode = strtoupper($this->orderDataAdapter->getIsoCountry($this->orderData['payer']['id_country']));
 
         return $paypalCountryCodeMatrice->getPaypalIsoCode($isoCode);
     }
@@ -110,7 +115,7 @@ class OrderDataProvider
      */
     public function getPayerAdminArea1()
     {
-        return \StateCore::getNameById($this->orderData['payer']['id_state']);
+        return $this->orderDataAdapter->getStateName($this->orderData['payer']['id_state']);
     }
 
     /**
@@ -292,7 +297,7 @@ class OrderDataProvider
     public function getShippingCountryCode()
     {
         $paypalCountryCodeMatrice = new PaypalCountryCodeMatrice();
-        $isoCode = strtoupper(\CountryCore::getIsoById($this->orderData['shipping']['id_country']));
+        $isoCode = strtoupper($this->orderDataAdapter->getIsoCountry($this->orderData['shipping']['id_country']));
 
         return $paypalCountryCodeMatrice->getPaypalIsoCode($isoCode);
     }
@@ -318,7 +323,7 @@ class OrderDataProvider
      */
     public function getShippingAdminArea1()
     {
-        return \StateCore::getNameById($this->orderData['shipping']['id_state']);
+        return $this->orderDataAdapter->getStateName($this->orderData['shipping']['id_state']);
     }
 
     /**
@@ -326,7 +331,7 @@ class OrderDataProvider
      */
     public function getShippingAdminArea2()
     {
-        return $this->orderData['shipping']['city'];
+        return $this->orderData['shipping']['admin_area_2'];
     }
 
     /**
@@ -358,9 +363,9 @@ class OrderDataProvider
      */
     public function getShippingFullName()
     {
-        $gender = new \GenderCore($this->orderData['customer']['id_gender'], $this->orderData['cart']['id_lang']);
+        $genderName = $this->orderDataAdapter->getGenderName($this->orderData['customer']['id_gender'], $this->orderData['cart']['id_lang']);
 
-        return $gender->name . ' ' . $this->getShippingSurname() . ' ' . $this->getShippingGivenName();
+        return $genderName . ' ' . $this->getShippingSurname() . ' ' . $this->getShippingGivenName();
     }
 
     /**

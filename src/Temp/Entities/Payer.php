@@ -168,7 +168,7 @@ class Payer
     }
 
     /** return sha1 of the object */
-    private function generateChecksum()
+    public function generateChecksum()
     {
         return sha1(serialize($this));
     }

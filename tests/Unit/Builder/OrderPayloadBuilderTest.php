@@ -24,25 +24,46 @@ use PHPUnit\Framework\TestCase;
 use PrestaShop\Module\PrestashopCheckout\Configuration\PrestaShopConfiguration;
 use PrestaShop\Module\PrestashopCheckout\Configuration\PrestaShopConfigurationOptionsResolver;
 use PrestaShop\Module\PrestashopCheckout\Repository\PaypalAccountRepository;
-use PrestaShop\Module\PrestashopCheckout\Temp\Builder\CreateOrderPayloadBuilder;
 use PrestaShop\Module\PrestashopCheckout\Temp\Factory\OrderDataFactory;
-use PrestaShop\Module\PrestashopCheckout\Temp\Provider\OrderDataProvider;
+use PrestaShop\Module\PrestashopCheckout\Temp\Adapter\OrderDataAdapter;
 
 class OrderPayloadBuilderTest extends TestCase
 {
     public function testPayloadCreation()
     {
-        $orderFactory = new OrderDataFactory(new PaypalAccountRepository(new PrestaShopConfiguration(new PrestaShopConfigurationOptionsResolver(1))));
-        $payload = $orderFactory->createFromArray($this->getData());
+        $orderDataAdapterMock = $this->createMock(OrderDataAdapter::class);
+        $orderDataAdapterMock->method('getGenderName')->willReturn('M');
+        $orderDataAdapterMock->method('getStateName')->willReturn('Ile de France');
+        $orderDataAdapterMock->method('getIsoCountry')->willReturn('FR');
+
+        $accountRepository = new PaypalAccountRepository(new PrestaShopConfiguration(new PrestaShopConfigurationOptionsResolver(1)));
+        $orderFactory = new OrderDataFactory($accountRepository, $orderDataAdapterMock);
+        $payload = $orderFactory->createFromArray($this->getDataPayload());
         $this->checkPayloadPayer($payload);
         $this->checkPayloadApplicationContext($payload);
         $this->checkPayloadPurchaseUnits($payload);
     }
 
+    public function testPayloadChecksum()
+    {
+        $orderDataAdapterMock = $this->createMock(OrderDataAdapter::class);
+        $orderDataAdapterMock->method('getGenderName')->willReturn('M');
+        $orderDataAdapterMock->method('getStateName')->willReturn('Ile de France');
+        $orderDataAdapterMock->method('getIsoCountry')->willReturn('FR');
+
+        $accountRepository = new PaypalAccountRepository(new PrestaShopConfiguration(new PrestaShopConfigurationOptionsResolver(1)));
+        $orderFactory = new OrderDataFactory($accountRepository, $orderDataAdapterMock);
+        $dataPayload = $this->getDataPayload();
+        $payload = $orderFactory->createFromArray($dataPayload, false);
+        $dataPayload['payer']['address_line_1'] = '79 avenue des Champs';
+        $payload2 = $orderFactory->createFromArray($dataPayload, false);
+        $this->checkPayloadChecksumPayer($payload, $payload2);
+    }
+
     /**
      * @return array
      */
-    public function getData()
+    public function getDataPayload()
     {
         return [
             'cart' => [
@@ -148,5 +169,15 @@ class OrderPayloadBuilderTest extends TestCase
     private function checkPayloadPurchaseUnits($payload)
     {
         print 'PurchaseUnits : ' . json_encode($payload['purchase_units']) . PHP_EOL;
+    }
+
+    /**
+     * @param array $payload
+     */
+    private function checkPayloadChecksumPayer($payload, $payload2)
+    {
+        $checksum = $payload['payer']->generateChecksum();
+        $checksum2 = $payload2['payer']->generateChecksum();
+        $this->assertTrue($checksum !== $checksum2,'Two different checksum for the Payer object');
     }
 }
