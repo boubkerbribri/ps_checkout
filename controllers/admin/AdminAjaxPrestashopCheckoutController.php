@@ -22,6 +22,7 @@ use PrestaShop\Module\PrestashopCheckout\Logger\LoggerDirectory;
 use PrestaShop\Module\PrestashopCheckout\Logger\LoggerFactory;
 use PrestaShop\Module\PrestashopCheckout\Logger\LoggerFileFinder;
 use PrestaShop\Module\PrestashopCheckout\Logger\LoggerFileReader;
+use PrestaShop\Module\PrestashopCheckout\OrderStates;
 use PrestaShop\Module\PrestashopCheckout\Presenter\Order\OrderPresenter;
 use PrestaShop\Module\PrestashopCheckout\Settings\RoundingSettings;
 use Psr\SimpleCache\CacheInterface;
@@ -839,6 +840,35 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
         }
 
         $this->exitWithResponse($response);
+    }
+
+    public function ajaxProcessGetMappedOrderStates()
+    {
+        $mappedOrderStates = [
+            OrderStates::PS_CHECKOUT_STATE_WAITING_CAPTURE => 0,
+            OrderStates::PS_CHECKOUT_STATE_AUTHORIZED => 0,
+            OrderStates::PS_CHECKOUT_STATE_CAPTURED => 0,
+            OrderStates::PS_CHECKOUT_STATE_VOIDED => 0,
+            OrderStates::PS_CHECKOUT_STATE_REFUNDED => 0,
+            OrderStates::PS_CHECKOUT_STATE_PARTIALLY_REFUNDED => 0,
+        ];
+
+        $this->exitWithResponse([
+            'httpCode' => 200,
+            'status' => true,
+            'mappedOrderStates' => $mappedOrderStates
+        ]);
+    }
+
+    public function ajaxProcessGetOrderStates()
+    {
+        $orderStates = OrderState::getOrderStates(Context::getContext()->language->id);
+
+        $this->exitWithResponse([
+            'httpCode' => 200,
+            'status' => true,
+            'orderStates' => $orderStates
+        ]);
     }
 
     /**
