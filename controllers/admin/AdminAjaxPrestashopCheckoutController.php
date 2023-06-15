@@ -50,8 +50,8 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
      */
     public function postProcess()
     {
-        $shopIdRequested = (int)Tools::getValue('id_shop');
-        $currentShopId = (int)Shop::getContextShopID();
+        $shopIdRequested = (int) Tools::getValue('id_shop');
+        $currentShopId = (int) Shop::getContextShopID();
 
         if ($shopIdRequested && $shopIdRequested !== $currentShopId) {
             $shopRequested = new Shop($shopIdRequested);
@@ -190,7 +190,7 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
         /** @var PrestaShop\Module\PrestashopCheckout\PayPal\PayPalConfiguration $paypalConfiguration */
         $paypalConfiguration = $this->module->getService('ps_checkout.paypal.configuration');
 
-        $paypalConfiguration->setCardPaymentEnabled((bool)Tools::getValue('hostedFieldsEnabled'));
+        $paypalConfiguration->setCardPaymentEnabled((bool) Tools::getValue('hostedFieldsEnabled'));
 
         $this->ajaxDie(json_encode(true));
     }
@@ -202,7 +202,7 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
     {
         /** @var \PrestaShop\Module\PrestashopCheckout\ExpressCheckout\ExpressCheckoutConfiguration $ecConfiguration */
         $ecConfiguration = $this->module->getService('ps_checkout.express_checkout.configuration');
-        $ecConfiguration->setOrderPage((bool)Tools::getValue('status'));
+        $ecConfiguration->setOrderPage((bool) Tools::getValue('status'));
 
         (new PrestaShop\Module\PrestashopCheckout\Api\Payment\Shop(Context::getContext()->link))->updateSettings();
 
@@ -314,8 +314,8 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
      */
     public function ajaxProcessFetchOrder()
     {
-        $isLegacy = (bool)Tools::getValue('legacy');
-        $id_order = (int)Tools::getValue('id_order');
+        $isLegacy = (bool) Tools::getValue('legacy');
+        $id_order = (int) Tools::getValue('id_order');
 
         if (empty($id_order)) {
             http_response_code(400);
@@ -345,7 +345,7 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
         }
 
         $psCheckoutCartCollection = new PrestaShopCollection('PsCheckoutCart');
-        $psCheckoutCartCollection->where('id_cart', '=', (int)$order->id_cart);
+        $psCheckoutCartCollection->where('id_cart', '=', (int) $order->id_cart);
 
         /** @var PsCheckoutCart|false $psCheckoutCart */
         $psCheckoutCart = $psCheckoutCartCollection->getFirst();
@@ -464,7 +464,7 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
                     'PS_SHOP_NAME',
                     null,
                     null,
-                    (int)Context::getContext()->shop->id
+                    (int) Context::getContext()->shop->id
                 ),
         ]);
 
@@ -480,7 +480,7 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
                 'content' => $this->l('Refund has been processed by PayPal.', 'translations'),
             ]));
         } else {
-            http_response_code(isset($response['httpCode']) ? (int)$response['httpCode'] : 500);
+            http_response_code(isset($response['httpCode']) ? (int) $response['httpCode'] : 500);
             $this->ajaxDie(json_encode([
                 'status' => false,
                 'errors' => [
@@ -505,7 +505,7 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
             Logger::ALERT,
             Logger::EMERGENCY,
         ];
-        $level = (int)Tools::getValue('level');
+        $level = (int) Tools::getValue('level');
 
         if (false === in_array($level, $levels, true)) {
             http_response_code(400);
@@ -517,7 +517,7 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
             ]));
         }
 
-        if (false === (bool)Configuration::updateGlobalValue(LoggerFactory::PS_CHECKOUT_LOGGER_LEVEL, $level)) {
+        if (false === (bool) Configuration::updateGlobalValue(LoggerFactory::PS_CHECKOUT_LOGGER_LEVEL, $level)) {
             http_response_code(500);
             $this->ajaxDie(json_encode([
                 'status' => false,
@@ -556,7 +556,7 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
             ]));
         }
 
-        if (false === (bool)Configuration::updateGlobalValue(LoggerFactory::PS_CHECKOUT_LOGGER_HTTP_FORMAT, $format)) {
+        if (false === (bool) Configuration::updateGlobalValue(LoggerFactory::PS_CHECKOUT_LOGGER_HTTP_FORMAT, $format)) {
             $this->ajaxDie(json_encode([
                 'status' => false,
                 'errors' => [
@@ -578,9 +578,9 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
      */
     public function ajaxProcessUpdateLoggerHttp()
     {
-        $isEnabled = (bool)Tools::getValue('isEnabled');
+        $isEnabled = (bool) Tools::getValue('isEnabled');
 
-        if (false === (bool)Configuration::updateGlobalValue(LoggerFactory::PS_CHECKOUT_LOGGER_HTTP, (int)$isEnabled)) {
+        if (false === (bool) Configuration::updateGlobalValue(LoggerFactory::PS_CHECKOUT_LOGGER_HTTP, (int) $isEnabled)) {
             http_response_code(500);
             $this->ajaxDie(json_encode([
                 'status' => false,
@@ -593,7 +593,7 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
         $this->ajaxDie(json_encode([
             'status' => true,
             'content' => [
-                'isEnabled' => (int)$isEnabled,
+                'isEnabled' => (int) $isEnabled,
             ],
         ]));
     }
@@ -603,7 +603,7 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
      */
     public function ajaxProcessUpdateLoggerMaxFiles()
     {
-        $maxFiles = (int)Tools::getValue('maxFiles');
+        $maxFiles = (int) Tools::getValue('maxFiles');
 
         if ($maxFiles < 0 || $maxFiles > 30) {
             http_response_code(400);
@@ -615,7 +615,7 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
             ]));
         }
 
-        if (false === (bool)Configuration::updateGlobalValue(LoggerFactory::PS_CHECKOUT_LOGGER_MAX_FILES, $maxFiles)) {
+        if (false === (bool) Configuration::updateGlobalValue(LoggerFactory::PS_CHECKOUT_LOGGER_MAX_FILES, $maxFiles)) {
             http_response_code(500);
             $this->ajaxDie(json_encode([
                 'status' => false,
@@ -653,8 +653,8 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
         header('Content-type: application/json');
 
         $filename = Tools::getValue('file');
-        $offset = (int)Tools::getValue('offset');
-        $limit = (int)Tools::getValue('limit');
+        $offset = (int) Tools::getValue('offset');
+        $limit = (int) Tools::getValue('limit');
 
         if (empty($filename) || false === Validate::isFileName($filename)) {
             http_response_code(400);
@@ -694,7 +694,7 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
             'offset' => $fileData['offset'],
             'limit' => $fileData['limit'],
             'currentOffset' => $fileData['currentOffset'],
-            'eof' => (int)$fileData['eof'],
+            'eof' => (int) $fileData['eof'],
             'lines' => $fileData['lines'],
         ]));
     }
@@ -796,7 +796,7 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
         /** @var \PrestaShop\Module\PrestashopCheckout\Webhook\WebhookSecretTokenService $webhookSecretTokenService */
         $webhookSecretTokenService = $this->module->getService('ps_checkout.webhook.service.secret_token');
 
-        $secret = (string)Tools::getValue('body');
+        $secret = (string) Tools::getValue('body');
 
         $response = [];
 
@@ -826,7 +826,7 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
 
         // When ShopId is not NULL, we have to retrieve global values with id_shop = NULL and shop values with id_shop = ShopId
         if ($shopId) {
-            $query->where('id_shop IS NULL OR id_shop = ' . (int)$shopId);
+            $query->where('id_shop IS NULL OR id_shop = ' . (int) $shopId);
         }
 
         $configurations = Db::getInstance()->executeS($query);
@@ -857,11 +857,10 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
 
         // When ShopId is not NULL, we have to retrieve global values with id_shop = NULL and shop values with id_shop = ShopId
         if ($shopId) {
-            $query->where('id_shop IS NULL OR id_shop = ' . (int)$shopId);
+            $query->where('id_shop IS NULL OR id_shop = ' . (int) $shopId);
         }
 
         $configurations = Db::getInstance()->executeS($query);
-
 
         $response = [
             'httpCode' => 200,
@@ -880,51 +879,43 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
     public function ajaxProcessGetMappedOrderStates()
     {
         $mappedOrderStates = [
-            OrderStates::PS_CHECKOUT_STATE_PENDING =>
-                [
+            OrderStates::PS_CHECKOUT_STATE_PENDING => [
                     'default' => '0',
-                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_PENDING, null, null, null, '0')
+                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_PENDING, null, null, null, '0'),
                 ],
-            OrderStates::PS_CHECKOUT_STATE_COMPLETED =>
-                [
+            OrderStates::PS_CHECKOUT_STATE_COMPLETED => [
                     'default' => \Configuration::get('PS_OS_PAYMENT'),
-                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_COMPLETED, null, null, null, '0')
+                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_COMPLETED, null, null, null, '0'),
                 ],
-            OrderStates::PS_CHECKOUT_STATE_CANCELED =>
-                [
+            OrderStates::PS_CHECKOUT_STATE_CANCELED => [
                     'default' => \Configuration::get('PS_OS_CANCELED'),
-                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_CANCELED, null, null, null, '0')
+                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_CANCELED, null, null, null, '0'),
                 ],
-            OrderStates::PS_CHECKOUT_STATE_ERROR =>
-                [
+            OrderStates::PS_CHECKOUT_STATE_ERROR => [
                     'default' => \Configuration::get('PS_OS_ERROR'),
-                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_ERROR, null, null, null, '0')
+                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_ERROR, null, null, null, '0'),
                 ],
-            OrderStates::PS_CHECKOUT_STATE_REFUNDED =>
-                [
+            OrderStates::PS_CHECKOUT_STATE_REFUNDED => [
                     'default' => \Configuration::get('PS_OS_REFUND'),
-                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_REFUNDED, null, null, null, '0')
+                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_REFUNDED, null, null, null, '0'),
                 ],
-            OrderStates::PS_CHECKOUT_STATE_PARTIALLY_REFUNDED =>
-                [
+            OrderStates::PS_CHECKOUT_STATE_PARTIALLY_REFUNDED => [
                     'default' => '0',
-                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_PARTIALLY_REFUNDED, null, null, null, '0')
+                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_PARTIALLY_REFUNDED, null, null, null, '0'),
                 ],
-            OrderStates::PS_CHECKOUT_STATE_PARTIALLY_PAID =>
-                [
+            OrderStates::PS_CHECKOUT_STATE_PARTIALLY_PAID => [
                     'default' => '0',
-                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_PARTIALLY_PAID, null, null, null, '0')
+                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_PARTIALLY_PAID, null, null, null, '0'),
                 ],
-            OrderStates::PS_CHECKOUT_STATE_AUTHORIZED =>
-                [
+            OrderStates::PS_CHECKOUT_STATE_AUTHORIZED => [
                     'default' => '0',
-                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_AUTHORIZED, null, null, null, '0')
+                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_AUTHORIZED, null, null, null, '0'),
                 ],
         ];
 
         $this->exitWithResponse([
             'status' => true,
-            'mappedOrderStates' => $mappedOrderStates
+            'mappedOrderStates' => $mappedOrderStates,
         ]);
     }
 
@@ -933,9 +924,8 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
         $orderStates = OrderState::getOrderStates(Context::getContext()->language->id);
 
         $this->exitWithResponse([
-            'httpCode' => 200,
             'status' => true,
-            'orderStates' => $orderStates
+            'orderStates' => $orderStates,
         ]);
     }
 
