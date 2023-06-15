@@ -43,5 +43,8 @@ export const DefaultSelectors1_7 = {
   PAY_LATER_OFFER_MESSAGE_CONTAINER_PRODUCT: '.product-prices',
   PAY_LATER_OFFER_MESSAGE_CONTAINER_CART_SUMMARY: '.cart-summary-totals',
 
-  PAY_LATER_BANNER_CONTAINER: '#notifications .container'
+  PAY_LATER_BANNER_CONTAINER: '#notifications .container',
+
+  PAYMENT_METHOD_LOGO_PRODUCT_CONTAINER: '#product .product-add-to-cart',
+  PAYMENT_METHOD_LOGO_CART_CONTAINER: '#cart .cart-summary .cart-detailed-actions'
 };

@@ -70,11 +70,13 @@ class FrontControllerValidator
             case 'order':
                 return true;
             case 'product':
+                // TODO PAYMENT LOGO
                 return $this->payLaterConfiguration->isProductPageMessageActive()
                     || $this->payLaterConfiguration->isProductPageBannerActive()
                     || $this->payLaterConfiguration->isProductPageButtonActive()
                     || $this->expressCheckoutConfiguration->isProductPageEnabled();
             case 'cart':
+                // TODO PAYMENT LOGO
                 return $this->payLaterConfiguration->isOrderPageMessageActive()
                     || $this->payLaterConfiguration->isOrderPageBannerActive()
                     || $this->payLaterConfiguration->isCartPageButtonActive()

@@ -98,4 +98,8 @@ export class QuerySelectorService extends BaseClass {
   getPayLaterOfferBannerContainerSelector(placement) {
     return this.instance.getPayLaterOfferBannerContainerSelector(placement);
   }
+
+  getPaymentMethodLogoContainer(placement) {
+    return this.instance.getPaymentMethodLogoContainer(placement);
+  }
 }
