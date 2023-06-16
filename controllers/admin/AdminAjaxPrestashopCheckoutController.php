@@ -878,38 +878,41 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
 
     public function ajaxProcessGetMappedOrderStates()
     {
+        /** @var \PrestaShop\Module\PrestashopCheckout\Configuration\PrestaShopConfiguration $configuration */
+        $configuration = $this->module->getService('ps_checkout.configuration');
+
         $mappedOrderStates = [
             OrderStates::PS_CHECKOUT_STATE_PENDING => [
                     'default' => '0',
-                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_PENDING, null, null, null, '0'),
+                    'value' => $configuration->get(OrderStates::PS_CHECKOUT_STATE_PENDING, ['default' => '0']),
                 ],
             OrderStates::PS_CHECKOUT_STATE_COMPLETED => [
-                    'default' => \Configuration::get('PS_OS_PAYMENT'),
-                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_COMPLETED, null, null, null, '0'),
+                    'default' => $configuration->get('PS_OS_PAYMENT'),
+                    'value' => $configuration->get(OrderStates::PS_CHECKOUT_STATE_COMPLETED, ['default' => '0']),
                 ],
             OrderStates::PS_CHECKOUT_STATE_CANCELED => [
-                    'default' => \Configuration::get('PS_OS_CANCELED'),
-                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_CANCELED, null, null, null, '0'),
+                    'default' => $configuration->get('PS_OS_CANCELED'),
+                    'value' => $configuration->get(OrderStates::PS_CHECKOUT_STATE_CANCELED, ['default' => '0']),
                 ],
             OrderStates::PS_CHECKOUT_STATE_ERROR => [
-                    'default' => \Configuration::get('PS_OS_ERROR'),
-                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_ERROR, null, null, null, '0'),
+                    'default' => $configuration->get('PS_OS_ERROR'),
+                    'value' => $configuration->get(OrderStates::PS_CHECKOUT_STATE_ERROR, ['default' => '0']),
                 ],
             OrderStates::PS_CHECKOUT_STATE_REFUNDED => [
-                    'default' => \Configuration::get('PS_OS_REFUND'),
-                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_REFUNDED, null, null, null, '0'),
+                    'default' => $configuration->get('PS_OS_REFUND'),
+                    'value' => $configuration->get(OrderStates::PS_CHECKOUT_STATE_REFUNDED, ['default' => '0']),
                 ],
             OrderStates::PS_CHECKOUT_STATE_PARTIALLY_REFUNDED => [
                     'default' => '0',
-                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_PARTIALLY_REFUNDED, null, null, null, '0'),
+                    'value' => $configuration->get(OrderStates::PS_CHECKOUT_STATE_PARTIALLY_REFUNDED, ['default' => '0']),
                 ],
             OrderStates::PS_CHECKOUT_STATE_PARTIALLY_PAID => [
                     'default' => '0',
-                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_PARTIALLY_PAID, null, null, null, '0'),
+                    'value' => $configuration->get(OrderStates::PS_CHECKOUT_STATE_PARTIALLY_PAID, ['default' => '0']),
                 ],
             OrderStates::PS_CHECKOUT_STATE_AUTHORIZED => [
                     'default' => '0',
-                    'value' => \Configuration::get(OrderStates::PS_CHECKOUT_STATE_AUTHORIZED, null, null, null, '0'),
+                    'value' => $configuration->get(OrderStates::PS_CHECKOUT_STATE_AUTHORIZED, ['default' => '0']),
                 ],
         ];
 
