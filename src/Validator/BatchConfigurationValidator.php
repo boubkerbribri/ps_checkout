@@ -1,4 +1,5 @@
 <?php
+
 namespace PrestaShop\Module\PrestashopCheckout\Validator;
 
 use PrestaShop\Module\PrestashopCheckout\PayPal\PayPalConfiguration;
@@ -15,20 +16,22 @@ class BatchConfigurationValidator
 
     /**
      * @param array $configuration
+     *
      * @throws Exception
      */
-    public function validateAjaxBatchConfiguration($configuration) {
+    public function validateAjaxBatchConfiguration($configuration)
+    {
         if (empty($configuration) || !is_array($configuration)) {
             throw new Exception("Config can't be empty");
         }
 
         foreach ($configuration as $configurationItem) {
             if (empty($configurationItem['name']) || 0 !== strpos($configurationItem['name'], 'PS_CHECKOUT_')) {
-                throw new Exception("Received invalid configuration key");
+                throw new Exception('Received invalid configuration key');
             }
 
             if (array_search($configurationItem['name'], self::NON_UPDATABLE_CONFIGURATION_KEYS)) {
-                throw new Exception("Received forbidden configuration key");
+                throw new Exception('Received forbidden configuration key');
             }
         }
     }

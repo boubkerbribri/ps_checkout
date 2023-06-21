@@ -941,7 +941,7 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
             $this->exitWithResponse([
                 'httpCode' => 500,
                 'status' => false,
-                'error' => $exception->getMessage()
+                'error' => $exception->getMessage(),
             ]);
         }
     }
