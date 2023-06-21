@@ -922,6 +922,30 @@ class AdminAjaxPrestashopCheckoutController extends ModuleAdminController
         ]);
     }
 
+    public function ajaxProcessBatchSaveConfiguration()
+    {
+        /** @var \PrestaShop\Module\PrestashopCheckout\Validator\BatchConfigurationValidator $configurationValidator */
+        $configurationValidator = $this->getContainer()->get('ps_checkout.validator.batch_configuration');
+        /** @var \PrestaShop\Module\PrestashopCheckout\Configuration\BatchConfigurationProcessor $batchConfigurationProcessor */
+        $batchConfigurationProcessor = $this->getContainer()->get('ps_checkout.configuration.batch_processor');
+
+        $configuration = json_decode(Tools::getValue('configuration'), true);
+        try {
+            $configurationValidator->validateAjaxBatchConfiguration($configuration);
+            $batchConfigurationProcessor->saveBatchConfiguration($configuration);
+
+            $this->exitWithResponse([
+                'status' => true,
+            ]);
+        } catch (Exception $exception) {
+            $this->exitWithResponse([
+                'httpCode' => 500,
+                'status' => false,
+                'error' => $exception->getMessage()
+            ]);
+        }
+    }
+
     public function ajaxProcessGetOrderStates()
     {
         $orderStates = OrderState::getOrderStates(Context::getContext()->language->id);
