@@ -42,7 +42,7 @@ class BatchConfigurationProcessor
     public function saveBatchConfiguration($configuration)
     {
         foreach ($configuration as $configurationItem) {
-            $this->prestaShopConfiguration->set($configurationItem['name'], $configurationItem['value']);
+            $this->prestaShopConfiguration->set(pSQL($configurationItem['name']), pSQL($configurationItem['value']));
         }
     }
 }
